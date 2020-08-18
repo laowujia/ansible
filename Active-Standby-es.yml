@@ -1,0 +1,4 @@
+- hosts: es
+  remote_user: root
+  roles:
+   - Active-Standby-es

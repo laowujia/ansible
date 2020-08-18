@@ -1,0 +1,70 @@
+- name: sync date
+  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
+
+- name: 安装依赖
+  yum:
+   name:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - nfs-utils
+    - rpcbind
+   state: latest
+   update_cache: yes
+
+- name: 安装yum源
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+- name: 安装docker
+  yum: name=docker-ce state=latest update_cache=yes
+
+- name: start docker
+  systemd: name=docker enabled=yes state=started
+
+- name: stop docker
+  service: name=docker state=stopped
+- name: 修改docker数据目录
+  command: mv /var/lib/docker /data/
+
+- name: 修改docker数据目录1
+  file: src=/data/docker dest=/var/lib/docker state=link
+
+- name: start docker1
+  systemd: name=docker state=started
+
+- name: create server-pem directory
+  file: path=/etc/docker/server-pem state=directory
+
+- name: configure docker
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+
+- name: 修改启动service
+  lineinfile: path=/usr/lib/systemd/system/docker.service regexp="^ExecStart=" line="ExecStart=/usr/bin/dockerd"
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+- name: create .docker directory
+  file: path=~/.docker state=directory
+
+- name: 复制免密配置文件1
+  copy: src=ca.pem dest=/etc/docker/server-pem/ca.pem force=yes backup=yes
+
+- name: 复制免密配置文件2
+  copy: src=server-cert.pem dest=/etc/docker/server-pem/server-cert.pem force=yes backup=yes
+
+- name: 复制免密配置文件3
+  copy: src=server-key.pem dest=/etc/docker/server-pem/server-key.pem force=yes backup=yes
+
+- name: 复制免密配置文件4
+  copy: src=ca.pem dest=/root/.docker/ca.pem force=yes backup=yes
+
+- name: 复制免密配置文件5
+  copy: src=cert.pem dest=/root/.docker/cert.pem force=yes backup=yes
+
+- name: 复制免密配置文件6
+  copy: src=key.pem dest=/root/.docker/key.pem force=yes backup=yes
+
+
+- name: restart docker
+  systemd: name=docker state=restarted

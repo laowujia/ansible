@@ -1,0 +1,9 @@
+- hosts: kafka
+  remote_user: root
+  roles:
+   - Active-Standby-kafka+zookeeper
+  
+  vars:
+   - Zookpeer1_IP: 192.168.228.203
+   - Zookpeer2_IP: 192.168.228.204
+   - Zookpeer3_IP: 192.168.228.205

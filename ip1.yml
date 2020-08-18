@@ -1,0 +1,18 @@
+- hosts: test
+  remote_user: root
+  vars:
+    collect_info: "/data/test/{{ansible_all_ipv4_addresses[0]}}/"
+
+#  tasks:
+#    - name: create IP directory
+#      file:
+#       name: "{{collect_info}}"
+#       state: directory
+  tasks:
+   - name: "get host port info"
+     shell: netstat -lntp
+     register: host_port
+
+   - name: "print host port"
+     debug:
+       msg: "{{host_port}}"

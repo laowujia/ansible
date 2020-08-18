@@ -1,0 +1,4 @@
+- name: change name
+  raw: "echo {{ hostname|quote }} >/etc/hostname"
+- name:
+  shell: hostname {{ hostname|quote }}

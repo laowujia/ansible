@@ -1,0 +1,8 @@
+---
+# defaults file for Active-Standby-es
+ES_VERSION: 7.9.0
+Cluster_name: tianshui
+Master_nodes: node01
+Discovery.seed_hosts: 192.168.228.203
+ES_memory: 1G
+JDK_version: 1.8.0

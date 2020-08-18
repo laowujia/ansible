@@ -1,0 +1,38 @@
+[mysqld]
+explicit_defaults_for_timestamp=true
+#datadir=/var/lib/mysql
+#datadir=/data/mysql/db
+datadir={{Mysql_datadir}}
+socket=/var/lib/mysql/mysql.sock
+#socket=/var/run/mysqld/mysql.sock
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+#log-error=/var/log/mysqld.log
+log-error=/data/mysql/log/error.log
+pid-file=/var/run/mysqld/mysqld.pid
+port=3306
+#设置最大连接数
+max_connections=5000
+#不区分大小写
+lower_case_table_names=1
+#设置服务编码
+character_set_server=utf8
+#设置SQL_MODE
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+#打开定时任务调度
+event_scheduler=ON
+server-id= {{ server_id }}
+log-bin=mysql-bin
+binlog_format=ROW
+gtid_mode=ON
+log_slave_updates=ON
+enforce_gtid_consistency=ON
+validate_password_policy=LOW
+
+{% if mysql_role == "slave" %}
+read_only=ON
+{% endif %}
+
+[client]
+#socket=/var/run/mysqld/mysql.sock
+socket=/var/lib/mysql/mysql.sock

@@ -1,0 +1,4 @@
+- name: configure centos 7 yum repo
+  copy: force=yes src=CentOS-Base.repo dest=/etc/yum.repos.d/CentOS-Base.repo owner=root group=root mode=0644
+  copy: force=yes src=epel.repo dest=/etc/yum.repos.d/epel.repo owner=root group=root mode=0644
+  when: ansible_distribution_version == "7.8"

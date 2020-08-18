@@ -1,0 +1,4 @@
+- hosts: master
+  remote_user: root
+  roles:
+   - alone-mysql5.7

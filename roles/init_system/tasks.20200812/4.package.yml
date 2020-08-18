@@ -1,0 +1,26 @@
+- name: install package
+  yum: name={{item}}
+  with_items:
+   - vim
+   - man
+   - gcc
+   - gcc-c++
+   - tree
+   - systat
+   - dos2unix
+   - ipmitool
+   - lrzsz
+   - iotop
+   - make
+   - openssl-devel
+   - rpm-build
+   - net-snmp
+   - net-snmp-devel
+   - net-snmp-utils
+   - rsync
+   - openssh-client
+   - nfs-utils
+   - rpcbind
+   - pciutils
+   - net-tools
+   - ntp

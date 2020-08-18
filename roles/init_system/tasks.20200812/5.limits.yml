@@ -1,0 +1,6 @@
+- name: 配置系统内核
+  lineinfile:
+   dest: /etc/security/limits.conf
+   line: '* soft nofile 65535'
+   line: '* hard nofile 65535'
+  ignore_errors: Ture

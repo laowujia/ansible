@@ -1,0 +1,33 @@
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: download redis5.0.7
+  get_url: url=http://download.redis.io/releases/redis-5.0.7.tar.gz dest=/data/soft/redis-5.0.7.tar.gz
+  tags:
+  - download redis5.0.7
+
+- name: unarchive redis
+  unarchive: src=/data/soft/redis-5.0.7.tar.gz dest=/data/  copy=no
+  tags:
+  - unarchive redis
+
+- name: 修改目录名
+  command: mv /data/redis-5.0.7 /data/redis01
+
+- name: install redis
+  shell: cd /data/redis01; make && make install 
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest=/data/redis01/redis.conf
+
+- name: redis service
+  template: src=redis.service.j2 dest=/usr/lib/systemd/system/redis.service
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+  notify:
+  - restart redis
+- name: start redis
+  service: name=redis enabled=true state=started
+ 
