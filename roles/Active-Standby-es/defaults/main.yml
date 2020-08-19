@@ -4,5 +4,6 @@ ES_VERSION: 7.9.0
 Cluster_name: tianshui
 Master_nodes: node01
 Discovery.seed_hosts: 192.168.228.203
-ES_memory: 1G
+ES_memory: 0.5G
 JDK_version: 1.8.0
+Kibana_server_host: "0.0.0.0"
