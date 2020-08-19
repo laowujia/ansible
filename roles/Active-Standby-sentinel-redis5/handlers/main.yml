@@ -1,0 +1,5 @@
+- name: restart redis
+  service: name=redis state=restarted
+
+- name: restart redissentinel
+  systemd: name=redissentinel state=restarted
