@@ -1,0 +1,4 @@
+---
+# defaults file for init_system
+
+SSHD_port: 22
