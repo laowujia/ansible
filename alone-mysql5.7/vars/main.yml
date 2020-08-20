@@ -3,6 +3,6 @@
 mysql_login_password: admin
 mysql_login_user: root
 mysql_db: wuming
-mysql_user: wuming
-mysql_user_password: admin
+mysql_user: canal
+mysql_user_password: canal_passwd
 
