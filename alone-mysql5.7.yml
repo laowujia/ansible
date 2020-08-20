@@ -1,4 +1,4 @@
-- hosts: master
+- hosts: 192.168.228.208
   remote_user: root
   roles:
    - alone-mysql5.7

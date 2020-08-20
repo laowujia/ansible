@@ -1,0 +1,8 @@
+---
+# vars file for mysql
+mysql_login_password: 297315820Ming
+mysql_login_user: root
+mysql_db: wuming
+mysql_user: wuming
+mysql_user_password: 297315820Ming
+
