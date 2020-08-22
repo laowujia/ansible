@@ -1,0 +1,16 @@
+---
+# tasks file for zabbix-agentd
+
+- name: download zabbix_agentd
+  get_url: url="http://download.minghero.com/zabbix/4.0/rhel/7/x86_64/zabbix-agent-{{Zabbix_agentd_version}}-3.el7.x86_64.rpm" dest=/tmp/
+
+- name: install zabbix_agentd
+  yum: name="/tmp/zabbix-agent-{{Zabbix_agentd_version}}-3.el7.x86_64.rpm" state=installed
+
+- name: zabbix-agentd config
+  template: src=zabbix_agentd.conf.j2 dest=/etc/zabbix/zabbix_agentd.conf
+  notify: restart zabbix-agent  
+
+- name: start zabbix-agent
+  systemd: name=zabbix-agent enabled=true  state=started
+

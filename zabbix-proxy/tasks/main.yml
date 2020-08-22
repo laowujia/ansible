@@ -1,0 +1,54 @@
+---
+# tasks file for zabbix-proxy
+
+- name: 安装依赖epel-release
+  yum: name=epel-release state=latest update_cache=yes
+
+- name: 安装依赖fping
+  yum: 
+   name: ['fping','python-pip','python-devel','mysql-devel']
+   state: latest
+   update_cache: yes
+
+
+- name: update pip
+  command: pip install --upgrade pip
+
+- name: installed mysql-python
+  pip: name=mysql-python state=latest
+
+- name: download zabbix-proxy
+  get_url: url="http://download.minghero.com/zabbix/4.0/rhel/7/x86_64/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm" dest=/tmp
+
+- name: install zabbix-proxy
+  yum: name="/tmp/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm"  state=installed
+
+- name: create zabbix-proxy database
+  mysql_db:
+   name: "{{Zabbix_DBname}}"
+   login_host: "{{DBHost}}"
+   login_user: "{{DBUser}}"
+   login_password: "{{DBPassword}}"
+   encoding: "utf8"
+   state: present
+  notify: init zabbix db
+
+
+- name: create zabibx_proxy DBuser
+  mysql_user:
+   name: "{{Zabbix_DBUser}}"
+   password: "{{Zabbix_DBPassword}}"
+   priv: "{{Zabbix_DBname}}.*:all,GRANT"
+   host: "{{ansible_all_ipv4_addresses[1]}}"
+   login_user: "{{DBUser}}"
+   login_host: "{{DBHost}}"
+   login_password: "{{DBPassword}}"
+   state: present
+
+- name: zabbix_proxy config
+  template: src=zabbix_proxy.conf.j2 dest=/etc/zabbix/zabbix_proxy.conf
+  notify: restart zabbix proxy
+ 
+- name: start
+  systemd: name=zabbix-proxy enabled=true state=started
+

@@ -1,0 +1,17 @@
+ProxyMode=0
+Server={{Zabbix_server}}
+Hostname={{Agent_hostname}}
+LogFile=/tmp/zabbix_proxy.log
+DBName={{Zabbix_DBname}}
+DBHost={{DBHost}}
+DBUser={{Zabbix_DBUser}}
+DBPassword={{Zabbix_DBPassword}}
+DBPort=3306
+ProxyLocalBuffer=3
+ProxyOfflineBuffer=24
+HeartbeatFrequency=60
+ConfigFrequency=5
+DataSenderFrequency=5
+StartPollers=10
+Timeout=4
+LogSlowQueries=3000

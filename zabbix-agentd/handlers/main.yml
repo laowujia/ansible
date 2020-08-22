@@ -1,0 +1,5 @@
+---
+# handlers file for zabbix-agentd
+
+- name: restart zabbix-agent
+  systemd: name=zabbis-agent state=restarted

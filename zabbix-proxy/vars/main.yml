@@ -1,0 +1,11 @@
+---
+# vars file for zabbix-proxy
+DBHost: 192.168.228.201
+DBUser: root
+DBPassword: 297315820Ming
+Zabbix_DBname: zabbix_proxy
+Zabbix_DBUser: zabbix
+Zabbix_DBPassword: Talkweb@123
+Zabbix_proxy_version: 4.0.9
+Agent_hostname: mas_proxy     #agent代理名称
+Zabbix_server: zabbix.yunke.com   #zabbix server 段IP或域名

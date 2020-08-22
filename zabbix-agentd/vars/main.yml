@@ -1,0 +1,4 @@
+---
+# vars file for zabbix-agentd
+Zabbix_agentd_version: 4.0.9
+zabbix_server_IP: 192.168.228.202
