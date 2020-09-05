@@ -1,9 +1,0 @@
-- name: 修改时区
-#  file: src={{/etc/localtime}} dest={{/usr/share/zoneinfo/Asia/Shanghai}} state=link
-  file: src=/usr/share/zoneinfo/Asia/Shanghai dest=/etc/localtime state=link
-
-- name: sync date
-  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
-
-- name: cron date
-  cron: minute=0 hour=0 day=* month=* weekday=* job='/usr/sbin/ntpdate  cn.pool.ntp.org'
