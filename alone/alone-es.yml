@@ -1,0 +1,4 @@
+- hosts: test_alone_es
+  remote_user: root
+  roles:
+   - alone-es

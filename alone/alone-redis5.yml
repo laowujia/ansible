@@ -1,0 +1,4 @@
+- hosts: test_alone_redis
+  remote_user: root
+  roles:
+   - alone-redis5

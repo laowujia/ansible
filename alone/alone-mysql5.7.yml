@@ -1,0 +1,4 @@
+- hosts: test_alone_mysql
+  remote_user: root
+  roles:
+   - alone-mysql5.7

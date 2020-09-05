@@ -1,0 +1,7 @@
+---
+# defaults file for Active-Standby-es
+ES_VERSION: 7.9.0
+Cluster_name: test
+ES_memory: 0.5G
+JDK_version: 1.8.0
+Kibana_server_host: "0.0.0.0"

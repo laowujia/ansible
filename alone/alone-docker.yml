@@ -1,0 +1,4 @@
+- hosts: test_alone_docker
+  remote_user: root
+  roles:
+   - alone-docker

@@ -1,0 +1,34 @@
+---
+# tasks file for alone_canal
+- name: install jdk
+  yum: name="java-{{Jdk_version}}-openjdk" state=latest update_cache=yes
+
+- name: create download package directory
+  file: path=/data/soft  state=directory
+
+- name: download canal
+  get_url: url="https://github.com/alibaba/canal/releases/download/canal-{{Canal_version}}-alpha-1/canal.deployer-{{Canal_version}}-SNAPSHOT.tar.gz" dest=/data/soft/
+
+- name: create canal directory
+  file: path={{Canal_dir}}  state=directory
+
+- name: unarchive canal 
+  unarchive: src="/data/soft/canal.deployer-{{Canal_version}}-SNAPSHOT.tar.gz" dest={{Canal_dir}}  copy=no
+  tags:
+  - unarchive canal
+
+- name: 添加talkweb-base
+  shell: cd "{{Canal_dir}}/conf/" ;mv example talkweb-base
+
+- name: talkweb-base config
+  template: src=talkweb-base_instance.properties.j2 dest=/data/canal/server/conf/talkweb-base/instance.properties
+
+- name: 添加res-sync
+  shell: cd "{{Canal_dir}}/conf/" ;cp -r talkweb-base res-sync
+  when: mysql_role == "all"
+- name: res-sync config 
+  template: src=res-sync_instance.properties.j2 dest=/data/canal/server/conf/res-sync/instance.properties
+  when: mysql_role == "all"
+
+- name: start canal
+  shell: cd {{Canal_dir}} ; ./bin/startup.sh

@@ -1,0 +1,7 @@
+---
+# vars file for alone-redis5
+
+Redis_dir: /data/redis
+Redis_password: Talkweb@2020talkweb
+Redis_port: 6379
+Redis_version: 5.0.7

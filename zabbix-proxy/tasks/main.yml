@@ -47,7 +47,6 @@
 
 - name: zabbix_proxy config
   template: src=zabbix_proxy.conf.j2 dest=/etc/zabbix/zabbix_proxy.conf
-  notify: restart zabbix proxy
  
 - name: start
   systemd: name=zabbix-proxy enabled=true state=started
