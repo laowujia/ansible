@@ -1,4 +1,0 @@
-- hosts: 192.168.228.208
-  remote_user: root
-  roles:
-   - alone-kafka+zookeeper
