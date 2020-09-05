@@ -1,0 +1,52 @@
+- name: install ntp
+  yum : name=ntp state=present
+
+- name: sync time
+  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
+
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: download tcl
+  get_url: url=http://mirror.centos.org/centos/7/os/x86_64/Packages/tcl-8.5.13-8.el7.x86_64.rpm dest=/data/soft/tcl-8.5.13-8.el7.x86_64.rpm
+  tags:
+   - tcl
+
+- name: install tcl
+  yum: name=/data/soft/tcl-8.5.13-8.el7.x86_64.rpm state=installed
+
+- name: download redis{{Redis_version}}
+  get_url: url=http://download.redis.io/releases/redis-{{Redis_version}}.tar.gz dest=/data/soft/redis-{{Redis_version}}.tar.gz
+  tags:
+  - download redis{{Redis_version}}
+
+- name: unarchive redis
+  unarchive: src=/data/soft/redis-{{Redis_version}}.tar.gz dest=/data/  copy=no
+  tags:
+  - unarchive redis
+
+- name: 修改目录名
+  command: mv /data/redis-{{Redis_version}} {{Redis_dir}}
+
+- name: install redis
+  shell: cd {{Redis_dir}}; make 
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest={{Redis_dir}}/redis.conf
+  when: mysql_role == "redis_master"
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest={{Redis_dir}}/redis.conf
+  when: mysql_role == "redis_slave"
+
+- name: redis service
+  template: src=redis.service.j2 dest=/usr/lib/systemd/system/redis.service
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+  notify:
+  - restart redis
+- name: start redis
+  service: name=redis enabled=true state=started
+ 

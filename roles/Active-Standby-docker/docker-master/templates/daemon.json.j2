@@ -1,0 +1,13 @@
+{
+  "registry-mirrors": ["https://f14bca18c8c246eeb9799d44df15bb70.mirror.swr.myhuaweicloud.com"],
+  "tls": true,
+  "tlsverify": true,
+  "tlscacert":"/etc/docker/server-pem/ca.pem",
+  "tlscert":"/etc/docker/server-pem/server-cert.pem",
+  "tlskey":"/etc/docker/server-pem/server-key.pem",
+  "hosts":["tcp://0.0.0.0:2376","unix:///var/run/docker.sock"],
+  "log-opts": {
+    "max-size": "50m",
+    "max-file": "3"
+  }
+}

@@ -1,0 +1,12 @@
+- hosts: kafka
+  remote_user: root
+  
+  tasks:
+   - name: test
+     shell: "ping -c 1 {{item}} | grep icmp_seq | gawk -F'[()]' '{print $2}'"
+     with_inventory_hostnames: test2
+     register: testip
+   
+   - name: test2
+     debug: "msg={{ item.stdout }}"
+     with_items: "{{ testip.results }}"

@@ -1,0 +1,17 @@
+---
+# tasks file for gitlab
+- name: 安装依赖
+  yum : 
+   name: ['policycoreutils', 'openssh-server', 'openssh-clients', 'postfix'] 
+   state: latest 
+   update_cache: yes
+
+- name: start postfix
+  systemd: name=postfix enabled=true state=started
+
+- name: download gitlab
+  get_url: url="https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-{{Gitlab_version}}-ce.1.el7.x86_64.rpm" dest=/tmp/gitlab-ce-{{Gitlab_version}}-ce.1.el7.x86_64.rpm
+
+- name: install gitlab
+  yum: nam="/tmp/gitlab-ce-{{Gitlab_version}}-ce.1.el7.x86_64.rpm" state=installed
+

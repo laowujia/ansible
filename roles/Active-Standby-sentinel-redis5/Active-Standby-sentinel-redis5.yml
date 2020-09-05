@@ -1,0 +1,4 @@
+- hosts: redis
+  remote_user: root
+  roles:
+   - Active-Standby-sentinel-redis5
