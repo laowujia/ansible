@@ -1,4 +1,4 @@
-- hosts: test
+- hosts: all
   remote_user: root
   roles:
    - init_system
