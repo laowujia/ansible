@@ -1,0 +1,13 @@
+---
+# vars file for Cluster-kafka+zookeeper
+JDK_VERSION: 1.8.0
+ZOOKEEPER_VERSION: 3.6.1
+ZOO1_ID: 1
+ZOO2_ID: 2
+ZOO3_ID: 3
+KAFKA_VERSION: 2.12-2.5.0
+Zookpeer1_IP: 192.168.228.203
+Zookpeer2_IP: 192.168.228.204
+Zookpeer3_IP: 192.168.228.205
+Kafka_dir: /data/kafka
+Zookpeer_dir: /data/zookeeper
