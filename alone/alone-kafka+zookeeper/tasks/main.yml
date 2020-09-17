@@ -16,17 +16,20 @@
 - name: unarchive zookpeeper
   unarchive: src="/data/soft/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin.tar.gz" dest=/data/ copy=no
 
+- name: rm zookeeper
+  file: path="{{Zookeeper_dir}}" state=absent
+
 - name: rename zookeeper directory
-  command: mv "/data/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin" /data/zookeeper
+  command:  mv "/data/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin" "{{Zookeeper_dir}}"
 
 - name: create zookeeper db directory
-  file: path=/data/zookeeper/db state=directory
+  file: path="{{Zookeeper_dir}}/db" state=directory
 
 - name: create zookeeper logs directory
-  file: path=/data/zookeeper/logs state=directory
+  file: path="{{Zookeeper_dir}}/logs" state=directory
 
 - name: zookpeeper config
-  template: src=zoo.cfg.j2 dest=/data/zookeeper/conf/zoo.cfg
+  template: src=zoo.cfg.j2 dest="{{Zookeeper_dir}}/conf/zoo.cfg"
  
   notify: restart zookeeper
 
@@ -47,14 +50,17 @@
 - name: unarchive kafka
   unarchive: src="/data/soft/kafka_{{KAFKA_VERSION}}.tgz" dest=/data/ copy=no
 
+- name: rm kafka directory
+  file: path="{{KAFKA_dir}}" state=absent
+
 - name: rename fafka
-  command: mv /data/kafka_{{KAFKA_VERSION}} /data/kafka
+  command: mv /data/kafka_{{KAFKA_VERSION}} "{{KAFKA_dir}}"
 
 - name: create kafka logs directory
-  file: path=/data/kafka/logs state=directory
+  file: path="{{KAFKA_dir}}/logs" state=directory
 
 - name: kafka config 
-  template: src=kafka.config.j2 dest=/data/kafka/config/server.properties 
+  template: src=kafka.config.j2 dest="{{KAFKA_dir}}/config/server.properties"
 
 - name: kafka service 
   template: src=kafka.service.j2 dest=/usr/lib/systemd/system/kafka.service
