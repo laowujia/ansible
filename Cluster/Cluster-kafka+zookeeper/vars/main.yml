@@ -11,3 +11,4 @@ Zookpeer2_IP: 192.168.228.204
 Zookpeer3_IP: 192.168.228.205
 Kafka_dir: /data/kafka
 Zookpeer_dir: /data/zookeeper
+IP: "{{ansible_all_ipv4_addresses[0]}}"   #部署应用的IP

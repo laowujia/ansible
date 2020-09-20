@@ -1,0 +1,22 @@
+---
+# tasks file for Clustar-docker
+- name: 安装依赖
+  yum:
+   name: ['yum-utils','device-mapper-persistent-data','lvm2','nfs-utils','rpcbind','ntp']
+   state: latest
+   update_cache: yes
+
+- name: 安装yum源
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+- name: 安装docker
+  yum: name=docker-ce state=latest update_cache=yes
+
+- name: create docker config directory
+  file: path=/etc/docker state=dorectory
+
+- name: configure docker
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+
+- name: start docker
+  systemd: name=docker enabled=yes state=started
