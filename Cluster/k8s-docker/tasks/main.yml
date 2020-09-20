@@ -13,7 +13,7 @@
   yum: name=docker-ce state=latest update_cache=yes
 
 - name: create docker config directory
-  file: path=/etc/docker state=dorectory
+  file: path=/etc/docker state=directory
 
 - name: configure docker
   template: src=daemon.json.j2 dest=/etc/docker/daemon.json
