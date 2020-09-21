@@ -39,7 +39,7 @@
    name: "{{Zabbix_DBUser}}"
    password: "{{Zabbix_DBPassword}}"
    priv: "{{Zabbix_DBname}}.*:all,GRANT"
-   host: "{{ansible_all_ipv4_addresses[1]}}"
+   host: "{{IP}}"
    login_user: "{{DBUser}}"
    login_host: "{{DBHost}}"
    login_password: "{{DBPassword}}"
