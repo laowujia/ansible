@@ -22,7 +22,7 @@ canal.zkServers =
 canal.zookeeper.flush.period = 1000
 canal.withoutNetty = false
 # tcp, kafka, RocketMQ
-canal.serverMode = {{Canal.serverMode}}
+canal.serverMode = kafka
 # flush meta cursor/parse position to file
 canal.file.data.dir = ${canal.conf.dir}
 canal.file.flush.period = 1000
@@ -93,7 +93,7 @@ canal.aliyun.secretKey =
 #################################################
 ######### 		destinations		#############
 #################################################
-canal.destinations = {{Canal.destinations_base}}{{Canal.destinations_res}}
+canal.destinations = {{Canal_destinations_base}}
 # conf root dir
 canal.conf.dir = ../conf
 # auto scan instance dir add/remove and start/stop instance
@@ -113,7 +113,7 @@ canal.instance.global.spring.xml = classpath:spring/file-instance.xml
 ##################################################
 ######### 		     MQ 		     #############
 ##################################################
-canal.mq.servers = {{Canal.mq.servers}}
+canal.mq.servers = {{Canal_mq_servers}}
 canal.mq.retries = 0
 canal.mq.batchSize = 16384
 canal.mq.maxRequestSize = 1048576
@@ -122,9 +122,9 @@ canal.mq.bufferMemory = 33554432
 canal.mq.canalBatchSize = 50
 canal.mq.canalGetTimeout = 100
 canal.mq.parallelThreadSize = 8
-canal.mq.flatMessage = {{Canal.mq.flatMessage}}
-canal.mq.compressionType = {{Canal.mq.compressionType}}
-canal.mq.acks = {{Canal.mq.acks}}
+canal.mq.flatMessage = true
+canal.mq.compressionType = none
+canal.mq.acks = all
 #canal.mq.properties. =
 canal.mq.producerGroup = test
 # Set this value to "cloud", if you want open message trace feature in aliyun.
@@ -144,4 +144,4 @@ canal.mq.kafka.kerberos.enable = false
 canal.mq.kafka.kerberos.krb5FilePath = "../conf/kerberos/krb5.conf"
 canal.mq.kafka.kerberos.jaasFilePath = "../conf/kerberos/jaas.conf"
 #kafka消息投递是否使用事务
-canal.mq.transaction= {{Canal.mq.transaction}}
+canal.mq.transaction= false

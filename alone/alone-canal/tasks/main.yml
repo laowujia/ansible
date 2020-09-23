@@ -3,11 +3,20 @@
 - name: install jdk
   yum: name="java-{{Jdk_version}}-openjdk" state=latest update_cache=yes
 
+- name: installd mysql
+  yum:
+   name: ['python-pip','python-devel','mysql-devel']
+   state: latest
+   update_cache: yes
+
+- name: installed mysql-python
+  pip: name=mysql-python state=latest
+
 - name: create download package directory
   file: path=/data/soft  state=directory
 
 - name: download canal
-  get_url: url="https://github.com/alibaba/canal/releases/download/canal-{{Canal_version}}-alpha-1/canal.deployer-{{Canal_version}}-SNAPSHOT.tar.gz" dest=/data/soft/
+  get_url: url="http://yum.itestcn.com/github/canal/canal.deployer-{{Canal_version}}-SNAPSHOT.tar.gz" dest=/data/soft/
 
 - name: create canal directory
   file: path={{Canal_dir}}  state=directory
@@ -17,18 +26,54 @@
   tags:
   - unarchive canal
 
+- name: canal config
+  template: src=canal.properties.j2 dest="{{Canal_dir}}/conf/canal.properties"
+
+
 - name: 添加talkweb-base
-  shell: cd "{{Canal_dir}}/conf/" ;mv example talkweb-base
+  shell: cd "{{Canal_dir}}/conf/" ;rm -rf talkweb-base &&  cp -r  example talkweb-base
+
+- name: Create base sql canal user
+  mysql_user:
+      name: "{{Canal_instance_dbUsername}}"
+      password: "{{Canal_instance_dbPassword}}"
+      host: "{{IP}}"
+      priv: '*.*:SELECT,REPLICATION SLAVE,REPLICATION CLIENT,GRANT'
+      login_user: "{{Base_mysql_login_user}}"
+      login_password: "{{Base_mysql_login_password}}"
+      login_host: "{{Talkweb_base_Mysql_dir}}"
+      state: present
 
 - name: talkweb-base config
-  template: src=talkweb-base_instance.properties.j2 dest=/data/canal/server/conf/talkweb-base/instance.properties
+  template: src=talkweb-base_instance.properties.j2 dest="{{Canal_dir}}/conf/talkweb-base/instance.properties"
+
+- name: canal 配置文件添加res-sync
+  lineinfile: path="{{Canal_dir}}/conf/canal.properties" regexp="^canal.destinations =" line="canal.destinations = talkweb-base,res-sync"
+  when: mysql_role == "all"
+  ignore_errors: yes
 
 - name: 添加res-sync
   shell: cd "{{Canal_dir}}/conf/" ;cp -r talkweb-base res-sync
   when: mysql_role == "all"
+  ignore_errors: yes
+
+- name: Create res sql canal  user
+  mysql_user:
+      name: "{{Canal_instance_dbUsername}}"
+      password: "{{Canal_instance_dbPassword}}"
+      host: "{{IP}}"
+      priv: '*.*:SELECT,REPLICATION SLAVE,REPLICATION CLIENT,GRANT'
+      login_user: "{{Base_mysql_login_user}}"
+      login_password: "{{Base_mysql_login_password}}"
+      login_host: "{{Talkweb_base_Mysql_dir}}"
+      state: present
+  when: mysql_role == "all"
+  ignore_errors: yes
+  
 - name: res-sync config 
   template: src=res-sync_instance.properties.j2 dest=/data/canal/server/conf/res-sync/instance.properties
   when: mysql_role == "all"
+  ignore_errors: yes
 
 - name: start canal
-  shell: cd {{Canal_dir}} ; ./bin/startup.sh
+  shell: "{{Canal_dir}}/bin/startup.sh"

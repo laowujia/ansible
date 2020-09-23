@@ -25,7 +25,7 @@ server.host: "{{Kibana_server_host}}"
 #server.name: "your-hostname"
 
 # The URLs of the Elasticsearch instances to use for all your queries.
-elasticsearch.hosts: ["http://{{ansible_all_ipv4_addresses[1]}}:9200"]
+elasticsearch.hosts: ["http://{{IP}}:9200"]
 
 # When this setting's value is true Kibana uses the hostname specified in the server.host
 # setting. When the value of this setting is false, Kibana uses the hostname of the host
