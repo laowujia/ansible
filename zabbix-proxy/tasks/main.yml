@@ -18,10 +18,10 @@
   pip: name=mysql-python state=latest
 
 - name: download zabbix-proxy
-  get_url: url="http://download.minghero.com/zabbix/4.0/rhel/7/x86_64/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm" dest=/tmp
+  get_url: url="http://yum.itestcn.com/github/zabbix_server/release/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm" dest=/opt/
 
 - name: install zabbix-proxy
-  yum: name="/tmp/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm"  state=installed
+  yum: name="/opt/zabbix-proxy-mysql-{{Zabbix_proxy_version}}-3.el7.x86_64.rpm"  state=installed
 
 - name: create zabbix-proxy database
   mysql_db:
@@ -39,7 +39,7 @@
    name: "{{Zabbix_DBUser}}"
    password: "{{Zabbix_DBPassword}}"
    priv: "{{Zabbix_DBname}}.*:all,GRANT"
-   host: "{{IP}}"
+   host: "{{ansible_all_ipv4_addresses[0]}}"
    login_user: "{{DBUser}}"
    login_host: "{{DBHost}}"
    login_password: "{{DBPassword}}"

@@ -1,4 +1,4 @@
-- hosts: zabbix_proxy
+- hosts: 10.88.0.10
   remote_user: root
   roles:
    - zabbix-proxy
