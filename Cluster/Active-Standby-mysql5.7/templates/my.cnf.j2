@@ -28,6 +28,7 @@ gtid_mode=ON
 log_slave_updates=ON
 enforce_gtid_consistency=ON
 validate_password_policy=LOW
+group_concat_max_len=102400
 
 {% if mysql_role == "slave" %}
 read_only=ON
