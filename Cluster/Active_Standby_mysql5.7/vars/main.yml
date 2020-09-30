@@ -1,0 +1,13 @@
+Mysql_datadir: /data/mysql/db                  #数据库数据存放位置
+Mysql_log: /data/mysql/log                     #数据库日志存放位置
+master_ip: 192.168.228.201                     #主数据库IP
+mysql_repl_user: repl                          #主从同步用户
+mysql_repl_password: 297315820Ming             #主从同步用户密码
+mysql_root_password: 297315820Ming             #数据库登录密码
+mysql_root_user: root                          #数据库登录用户
+mysql_db: wuming                               #创建数据库wuming
+mysql_user: slave                              #创建用户slave
+mysql_user_password: 297315820Ming             #数据库用户slave 密码
+back_directory: /data/db_backup                #备份脚本所在目录
+back_db_directory: /data/db_backup             #数据备份目录
+

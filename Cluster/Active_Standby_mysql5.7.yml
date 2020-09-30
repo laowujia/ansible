@@ -1,0 +1,4 @@
+- hosts: Active_Standby_mysql5.7
+  remote_user: root
+  roles:
+   - Active_Standby_mysql5.7
