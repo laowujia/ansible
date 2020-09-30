@@ -1,0 +1,11 @@
+---
+# vars file for Active-Standby-es
+#
+IP: "{{ansible_all_ipv4_addresses[0]}}"    #部署es的IP
+ES_VERSION: 7.6.2                          #ES版本号
+Cluster_name: tianshui                     #集群名称
+Master_nodes: master02                     #主节点的主机名
+Discovery.seed_hosts: 192.168.228.201      #主节点IP
+ES_memory: 1G                              #设置es启动时使用的内存
+JDK_version: 1.8.0                         #jdk版本号
+Kibana_server_host: "0.0.0.0"              #kibana监听的地址

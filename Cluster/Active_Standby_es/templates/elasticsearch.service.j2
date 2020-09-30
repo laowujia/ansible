@@ -1,0 +1,34 @@
+[Unit]
+Description=elasticsearch
+After=network.target
+ 
+[Service]
+# 内存锁定
+LimitMEMLOCK=infinity
+PrivateTmp=true
+Environment=ES_HOME=/data/elasticsearch-{{ES_VERSION}}
+Environment=PID_DIR=/data/elasticsearch-{{ES_VERSION}}
+User=elasticsearch
+Group=elasticsearch
+WorkingDirectory=/data/elasticsearch-{{ES_VERSION}}
+ExecStart=/data/elasticsearch-{{ES_VERSION}}/bin/elasticsearch -p ${PID_DIR}/elasticsearch.pid --quiet
+# Specifies the maximum file descriptor number that can be opened by this process
+LimitNOFILE=65535
+# Specifies the maximum number of processes
+LimitNPROC=4096
+# Specifies the maximum size of virtual memory
+LimitAS=infinity
+# Specifies the maximum file size
+LimitFSIZE=infinity
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=0
+# SIGTERM signal is used to stop the Java process
+KillSignal=SIGTERM
+# Send the signal only to the JVM rather than its control group
+KillMode=process
+# Java process is never killed
+SendSIGKILL=no
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=143
+[Install]
+WantedBy=mutil-user.target
