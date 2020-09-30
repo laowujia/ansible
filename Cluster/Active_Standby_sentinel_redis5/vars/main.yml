@@ -1,0 +1,8 @@
+---
+# vars file for Active-Standby-redis5
+Redis_version: 5.0.7   #redis版本号
+Redis_master_ip: 192.168.228.203    #主节点IP
+Redis_port: 6379       #rdis端口
+Redis_passwd: Talkweb@2020talkweb    #redis密码和masterauth密码
+Redis_dir: /data/redis     #redis目录
+Redis_sentinel: 2    #当主节点出现问题时，表决Sentinel的个数
