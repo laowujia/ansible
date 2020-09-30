@@ -1,7 +1,0 @@
----
-# defaults file for Active-Standby-redis5
-Redis_version: 5.0.7
-Redis_master_ip: 192.168.228.203
-Redis_port: 6379
-Redis_passwd: Talkweb@2020talkweb
-Redis_dir: /data/redis

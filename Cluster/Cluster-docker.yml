@@ -1,4 +1,0 @@
-- hosts: Cluster_docker
-  remote_user: root
-  roles:
-   - Cluster-docker

@@ -1,4 +1,0 @@
-- hosts: docker_master
-  remote_user: root
-  roles:
-   - alone-dokcer-master

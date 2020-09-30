@@ -1,3 +1,0 @@
-Docker_IP: 'IP:192.168.228.200,IP:192.168.228.203,IP:192.168.228.204,IP:127.0.0.1'
-Alone_docker_dir: "{{ lookup('env', 'PWD') }}"
-#Locathost_IP: 192.168.228.200  #ansible主机地址

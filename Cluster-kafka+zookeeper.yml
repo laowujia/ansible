@@ -1,4 +1,0 @@
-- hosts: kafka
-  remote_user: root
-  roles:
-   - Cluster-kafka+zookeeper

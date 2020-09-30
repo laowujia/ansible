@@ -1,4 +1,0 @@
-- hosts: cluster_redis
-  remote_user: root
-  roles:
-   - Cluster-redis5
