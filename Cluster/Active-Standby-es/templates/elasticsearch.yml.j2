@@ -3,7 +3,7 @@ node.name: {{ansible_hostname}}
 path.data: data
 path.logs: logs
 bootstrap.memory_lock: true
-network.host: {{ansible_all_ipv4_addresses[1]}}
+network.host: {{IP}}
 http.port: 9200
 transport.port: 9300
 cluster.initial_master_nodes: ["{{Master_nodes}}"]

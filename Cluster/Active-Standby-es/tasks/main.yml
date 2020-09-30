@@ -47,7 +47,8 @@
    line: elasticsearch hard memlock unlimited
 
 - name: download es
-  get_url: url="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz" dest="/data/soft/elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz"
+  #get_url: url="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz" dest="/data/soft/elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz"
+  get_url: url="http://yum.itestcn.com/github/elasticsearch/release/elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft/
   tags:
   - download es
 
@@ -80,8 +81,9 @@
   when: mysql_role == "es_slave" 
 
 - name: download ik 分词
-  get_url: url="https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v{{ES_VERSION}}/elasticsearch-analysis-ik-{{ES_VERSION}}.zip" dest=/data/soft/
-
+ # get_url: url="https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v{{ES_VERSION}}/elasticsearch-analysis-ik-{{ES_VERSION}}.zip" dest=/data/soft/
+  get_url: url="http://yum.itestcn.com/github/elasticsearch/release/elasticsearch-analysis-ik-{{ES_VERSION}}.zip" dest=/data/soft/  
+ 
 - name: create ik directory
   file: path="/data/elasticsearch-{{ES_VERSION}}/plugins/ik" state=directory
 
@@ -104,7 +106,8 @@
   systemd: name=elasticsearch enabled=true state=started
 
 - name: download kibana
-  get_url: url="https://artifacts.elastic.co/downloads/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+   #get_url: url="https://artifacts.elastic.co/downloads/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+  get_url: url="https://yum.itestcn.com/github/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
   when: mysql_role == "es_master" 
 
 - name: unarchive kibana
