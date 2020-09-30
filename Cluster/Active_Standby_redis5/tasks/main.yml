@@ -31,39 +31,22 @@
 - name: install redis
   shell: cd "{{Redis_dir}}/redis"; make 
 
-- name: copyconfig file redis
+- name: copyconfig file redis master
   template: src=redis.conf.j2 dest="{{Redis_dir}}/redis/redis.conf"
   when: mysql_role == "redis_master"
 
-- name: copyconfig file redis
+- name: copyconfig file redis slave
   template: src=redis.conf.j2 dest="{{Redis_dir}}/redis/redis.conf"
   when: mysql_role == "redis_slave"
-  notify:
-  - restart redis
 
 - name: redis service
   template: src=redis.service.j2 dest=/usr/lib/systemd/system/redis.service
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
   notify:
   - restart redis
-
-- name: systemctl daemon-reload
-  systemd: daemon-reload=yes
-
 - name: start redis
   service: name=redis enabled=true state=started
-
-- name: sentinel config
-  template: src=sentinel.conf.j2 dest="{{Redis_dir}}/redis/sentinel.conf"
-
-- name: redissentinel serivce
-  template: src=redissentinel.service.j2 dest=/usr/lib/systemd/system/redissentinel.service
-  notify:
-  - restart redissentinel
-
-- name: systemctl daemon-reload
-  systemd: daemon-reload=yes
-
-- name: start sentinel
-  systemd: name=redissentinel enabled=true state=started
-- name: start sentinel
-  command: "{{Redis_dir}}/redis/src/redis-sentinel" "{{Redis_dir}}/redis/sentinel.conf"
+ 

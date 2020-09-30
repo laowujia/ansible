@@ -1,0 +1,83 @@
+- name: install JDK
+  yum: name="java-{{JDK_VERSION}}-openjdk-devel" state=latest
+
+- name: off swap
+  command: swapoff -a 
+
+- name: off swap1
+  lineinfile: path=/etc/fstab regexp="swap" line="^#.*swap.*"  backup=yes
+
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: download zookeeper
+  get_url: url="http://yum.itestcn.com/github/zookeeper/release/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin.tar.gz" dest="/data/soft/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin.tar.gz"
+
+- name: unarchive zookpeeper
+  unarchive: src="/data/soft/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin.tar.gz" dest=/data/ copy=no
+
+- name: rename zookeeper directory
+  command: mv "/data/apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin" "{{Zookpeer_dir}}"
+
+- name: create zookeeper db directory
+  file: path="{{Zookpeer_dir}}/db" state=directory
+
+- name: create zookeeper logs directory
+  file: path="{{Zookpeer_dir}}/logs" state=directory
+
+- name: 设置myid
+  template: src=myid.j2 dest="{{Zookpeer_dir}}/db/myid"
+
+- name: zookpeeper config
+  template: src=zoo.cfg.j2 dest="{{Zookpeer_dir}}/conf/zoo.cfg"
+ 
+  notify: restart zookeeper
+
+- name: zookeeper serviceconfig
+  template: src=zookeeper.service.j2 dest=/usr/lib/systemd/system/zookeeper.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+
+- name: start zookeeper service 
+  service: name=zookeeper enabled=true state=started
+
+
+- name: download kafka
+  get_url: url="http://yum.itestcn.com/github/kafka/release/kafka_{{KAFKA_VERSION}}.tgz" dest="/data/soft/kafka_{{KAFKA_VERSION}}.tgz"
+
+- name: unarchive kafka
+  unarchive: src="/data/soft/kafka_{{KAFKA_VERSION}}.tgz" dest=/data/ copy=no
+
+- name: rename fafka
+  command: mv /data/kafka_{{KAFKA_VERSION}} "{{Kafka_dir}}"
+
+- name: create kafka logs directory
+  file: path="{{Kafka_dir}}/logs" state=directory
+
+- name: kafka server.properties
+  template: src=kafka.server.properties.j2 dest="{{Kafka_dir}}/config/server.properties"
+ 
+  notify: restart kafka
+
+- name: kafka producer.properties
+  template: src=producer.properties.j2 dest="{{Kafka_dir}}/config/producer.properties"
+  
+  notify: restart kafka
+
+- name: kafka consumer.properties
+  template: src=consumer.properties.j2 dest="{{Kafka_dir}}/config/consumer.properties"
+  
+  notify: restart kafka 
+
+- name: kafka service 
+  template: src=kafka.service.j2 dest=/usr/lib/systemd/system/kafka.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+
+- name: start zookeeper service 
+  systemd: name=kafka enabled=true state=started
+
