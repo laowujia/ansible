@@ -107,7 +107,7 @@
 
 - name: download kibana
    #get_url: url="https://artifacts.elastic.co/downloads/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
-  get_url: url="https://yum.itestcn.com/github/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+  get_url: url="http://yum.itestcn.com/github/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
   when: mysql_role == "es_master" 
 
 - name: unarchive kibana
