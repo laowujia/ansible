@@ -11,7 +11,7 @@ http.cors.enabled: true
 http.cors.allow-origin: /.*/
 http.cors.allow-headers: Authorization
 
-{% if mysql_role == "slave" %}
+{% if mysql_role == "es_slave" %}
 discovery.seed_hosts: {{Discovery.seed_hosts}}
 {% endif %}
 
