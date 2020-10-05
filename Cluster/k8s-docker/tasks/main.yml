@@ -1,10 +1,34 @@
 ---
 # tasks file for Clustar-docker
+- name: off swap
+  command: swapoff -a
+
+- name: off swap1
+  command: sed -i 's/.*swap.*/#&/' /etc/fstab
+
+- name: 加载内核模块
+  shell: /usr/sbin/modprobe br_netfilter
+
+- name: 将桥接的IPv4流量传递到iptables的链
+  sysctl:
+   name: net.bridge.bridge-nf-call-ip6tables
+   value: 1
+   sysctl_set: yes
+
+- name: 将桥接的IPv4流量传递到iptables的链
+  sysctl:
+   name: net.bridge.bridge-nf-call-iptables
+   value: 1
+   sysctl_set: yes
+
 - name: 安装依赖
   yum:
    name: ['yum-utils','device-mapper-persistent-data','lvm2','nfs-utils','rpcbind','ntp']
    state: latest
    update_cache: yes
+
+- name: sync  date
+  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
 
 - name: 安装yum源
   shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
