@@ -2,3 +2,8 @@
 # vars file for Active-Standby-es
 #
 IP: "{{ansible_all_ipv4_addresses[0]}}"
+ES_VERSION: 7.6.2
+Cluster_name: test
+ES_memory: 0.5G
+JDK_version: 1.8.0
+Kibana_server_host: "0.0.0.0"

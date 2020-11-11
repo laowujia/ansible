@@ -99,7 +99,7 @@
   systemd: name=elasticsearch enabled=true state=started
 
 - name: download kibana
-  get_url: url="https://artifacts.elastic.co/downloads/kibana/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+  get_url: url="http://yum.itestcn.com/github/elasticsearch/release/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
 
 - name: unarchive kibana
   unarchive: src=/data/soft/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz dest=/data/ copy=no

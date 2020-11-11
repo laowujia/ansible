@@ -4,9 +4,6 @@
    state: latest
    update_cache: yes
 
-- name: sync date
-  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
-
 - name: 安装yum源
   shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
@@ -24,39 +21,9 @@
 - name: 修改docker数据目录1
   file: src=/data/docker dest=/var/lib/docker state=link
 
-- name: start docker1
-  systemd: name=docker state=started
-
-- name: create scripts directory
-  file: path=/nfs/deploy/docker-cert state=directory
-
-- name: 复制免密脚本
-  template: src=generate_dokcer_cert.sh.j2 dest=/nfs/deploy/docker-cert/generate_dokcer_cert.sh
-
-- name: 执行脚本
-  shell: cd /nfs/deploy/docker-cert/ ; /bin/bash /nfs/deploy/docker-cert/generate_dokcer_cert.sh
-
-
-- name: create server-pem directory
-  file: path=/etc/docker/server-pem state=directory
-
-- name: copy file
-  shell: cd /nfs/deploy/docker-cert/ ; scp ca.pem server-cert.pem server-key.pem  /etc/docker/server-pem
-
 - name: configure docker
   template: src=daemon.json.j2 dest=/etc/docker/daemon.json
 
-- name: 修改启动service
-  lineinfile: path=/usr/lib/systemd/system/docker.service regexp="^ExecStart=" line="ExecStart=/usr/bin/dockerd"
+- name: start docker1
+  systemd: name=docker state=started
 
-- name: systemctl daemon-reload
-  systemd: daemon-reload=yes
-
-- name: restart docker
-  systemd: name=docker state=restarted
-
-- name: create .docker directory
-  file: path=~/.docker state=directory
-
-- name: 复制配置文件到客户端
-  shell: cd /nfs/deploy/docker-cert ; scp {ca,cert,key}.pem ~/.docker
