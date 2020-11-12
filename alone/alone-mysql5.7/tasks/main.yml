@@ -74,3 +74,12 @@
       login_user: "{{mysql_login_user}}"
       login_password: "{{mysql_login_password}}"
       state: present
+
+- name: create db_backup directory
+  file: path="{{back_db_directory}}" state=directory
+
+- name: backup script
+  template: src=mysql_db_backup.sh.j2 dest="{{back_directory}}/mysql_db_backup.sh" mode=0755
+
+- name: cron backup script
+  cron: minute=0 hour=2 day=* month=* weekday=* job=/bin/sh "{{back_directory}}/mysql_db_backup.sh"
