@@ -75,5 +75,13 @@
   when: mysql_role == "all"
   ignore_errors: yes
 
-- name: start canal
-  shell: "{{Canal_dir}}/bin/startup.sh"
+
+- name: canal service 
+  template: src=canal.service.j2 dest=/usr/lib/systemd/system/canal.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+
+- name: start canal service 
+  service: name=canal enabled=true state=started
