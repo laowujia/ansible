@@ -1,0 +1,24 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.cntest.com:25'
+  smtp_from: 'monitor@cntest.com'
+  smtp_auth_username: 'monitor@cntest.com'
+  smtp_auth_password: 'Talkweb@123' 
+  smtp_require_tls: false
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'mail'
+receivers:
+- name: 'mail'
+  email_configs:
+  - to: 'wuweiming@talkweb.com.cn'
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname','instance']

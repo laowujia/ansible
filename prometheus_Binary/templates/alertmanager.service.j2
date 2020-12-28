@@ -1,0 +1,11 @@
+[Unit]
+Description=alertmanager
+
+[Service]
+ExecStart={{Monitor_dir}}/alertmanager/alertmanager --config.file={{Monitor_dir}}/alertmanager/alertmanager.yml
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
