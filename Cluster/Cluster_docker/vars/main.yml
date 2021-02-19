@@ -1,6 +1,0 @@
----
-# vars file for Clustar-docker
-Docker_IP: 'IP:192.168.228.201,IP:192.168.228.203,IP:192.168.228.204,IP:127.0.0.1'
-Alone_docker_dir: "{{ lookup('env', 'PWD') }}"  #ansible脚本目录
-Locathost_IP: 192.168.228.200    #ansibie主机IP
-Docker_dir: /data                #docker安装目录

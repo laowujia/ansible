@@ -1,9 +1,0 @@
----
-# vars file for mysql
-mysql_login_password: admin
-mysql_login_user: root
-mysql_db: wuming
-mysql_user: canal
-mysql_user_password: canal_passwd
-back_db_directory: /data/db_backup             #数据备份目录
-back_directory: /data/db_backup                #备份脚本所在目录

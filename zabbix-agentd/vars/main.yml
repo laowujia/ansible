@@ -1,5 +1,0 @@
----
-# vars file for zabbix-agentd
-Zabbix_agentd_version: 4.0.9
-zabbix_server_IP: 10.88.0.10
-IP: "{{ansible_all_ipv4_addresses[0]}}"

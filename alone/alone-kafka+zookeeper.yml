@@ -1,4 +1,0 @@
-- hosts: test_alone_kafka
-  remote_user: root
-  roles:
-   - alone-kafka+zookeeper

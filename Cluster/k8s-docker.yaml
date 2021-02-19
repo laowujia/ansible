@@ -1,4 +1,0 @@
-- hosts: k8s_docker
-  remote_user: root
-  roles:
-   - k8s-docker

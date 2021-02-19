@@ -1,9 +1,0 @@
----
-# vars file for alone-kafka+zookeeper
-IP: "{{ansible_all_ipv4_addresses[0]}}"     #如果只有一块网卡则取0 ，如果有多块网卡，这个值是数组，取属组里面的值就好
-Zookeeper_dir: /data/zookeeper              #Zookeeper安装目录
-JDK_VERSION: 1.8.0                          #JDK版本
-ZOOKEEPER_VERSION: 3.6.1                    #Zookeeper的版本
-ZOO1_ID: 1                  
-KAFKA_VERSION: 2.12-2.5.0                   #kafka版本
-KAFKA_dir: /data/kafka                      #kafka安装目录
