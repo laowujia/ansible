@@ -1,0 +1,18 @@
+cluster.name: {{Cluster_name}}
+node.name: {{ansible_hostname}}
+path.data: data
+path.logs: logs
+bootstrap.memory_lock: true
+network.host: {{IP}}
+http.port: 9200
+transport.port: 9300
+cluster.initial_master_nodes: ["{{Master_nodes}}"]
+http.cors.enabled: true
+http.cors.allow-origin: /.*/
+http.cors.allow-headers: Authorization
+
+{% if ansible_default_ipv4.address  == Discovery_seed_hosts %}
+#discovery.seed_hosts: {{Discovery_seed_hosts}}
+{% else %}
+discovery.seed_hosts: {{Discovery_seed_hosts}}
+{% endif %}

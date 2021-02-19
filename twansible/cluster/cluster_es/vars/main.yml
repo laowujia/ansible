@@ -1,0 +1,11 @@
+---
+# vars file for Active-Standby-es
+#
+IP: "{{ansible_all_ipv4_addresses[0]}}"    #部署es的IP
+ES_VERSION: 7.6.2                          #ES版本号
+Cluster_name: talkedu                      #集群名称
+Master_nodes: node02
+Discovery_seed_hosts: 192.168.228.204
+ES_memory: 1G                              #设置es启动时使用的内存
+JDK_version: 1.8.0                         #jdk版本号
+Kibana_server_host: "0.0.0.0"              #kibana监听的地址

@@ -1,0 +1,29 @@
+---
+
+- name: create package Directory
+  file: path=/data/ state=directory
+
+- name: download kibana
+  get_url: url="http://yum.itestcn.com/github/elasticsearch/release/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+
+- name: unarchive kibana
+  unarchive: src=/data/soft/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz dest=/data/ copy=no
+
+- name: 修改 kibana 目录名
+  command: mv /data/kibana-{{ES_VERSION}}-linux-x86_64 /data/kibana-{{ES_VERSION}}
+
+- name: kibana config 
+  template: 
+   src: kibana.yml.j2 
+   dest: /data/kibana-{{ES_VERSION}}/config/kibana.yml
+
+- name: 修改es 属主属组
+  file: path="/data/kibana-{{ES_VERSION}}" group=elasticsearch owner=elasticsearch recurse=yes
+
+- name: kibana service
+  template: src=kibana.service.j2 dest=/usr/lib/systemd/system/kibana.service 
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+- name: start kibana
+  systemd: name=kibana enabled=true  state=started

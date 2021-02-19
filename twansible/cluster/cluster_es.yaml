@@ -1,0 +1,4 @@
+- hosts: cluster_es
+  remote_user: root
+  roles:
+   - cluster_es

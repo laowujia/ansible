@@ -1,0 +1,88 @@
+---
+# tasks file for Active-Standby-es
+
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: off swap
+  command: swapoff -a
+
+- name: off swap1
+  lineinfile: path=/etc/fstab regexp="swap" line="^#.*swap.*"  backup=yes
+
+- name: 降低交换
+  sysctl:
+   name: vm.swappiness
+   value: 1
+   sysctl_set: yes
+
+- name: 设置虚拟内存
+  sysctl:
+   name: vm.max_map_count
+   value: 262144
+   sysctl_set: yes
+   reload: yes
+
+- name: add user elasticsearch
+  user: name=elasticsearch state=present
+
+- name: add limits 设置打开文件数量限制 root用户级别
+  lineinfile:
+   dest: /etc/security/limits.conf
+   line: 'elasticsearch - nofile 65535'
+
+- name: add limits 设置线程限制 root用户级别
+  lineinfile:
+   dest: /etc/security/limits.conf
+   line: 'elasticsearch - nproc 4096'
+
+- name: add limits1 设置锁定内存权限 root用户级别
+  lineinfile:
+   dest: /etc/security/limits.conf
+   line: elasticsearch soft memlock unlimited
+
+- name: add limits2 设置锁定内存权限 root用户级别
+  lineinfile:
+   dest: /etc/security/limits.conf
+   line: elasticsearch hard memlock unlimited
+
+- name: 推送es 二进制文件
+  unarchive: src="elasticsearch-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/
+
+- name:  es_Xms
+  lineinfile:
+   dest: /data/elasticsearch-{{ES_VERSION}}/config/jvm.options
+   regexp: "^-Xms"
+   line: "-Xms{{ES_memory}}"
+
+- name:  es_Xms
+  lineinfile:
+   dest: "/data/elasticsearch-{{ES_VERSION}}/config/jvm.options"
+   regexp: "^-Xmx"
+   line: "-Xmx{{ES_memory}}"
+
+- name: config elasticsearch master
+  template: 
+   src: elasticsearch.yml.j2
+   dest: /data/elasticsearch-{{ES_VERSION}}/config/elasticsearch.yml
+
+- name: create ik directory
+  file: path="/data/elasticsearch-{{ES_VERSION}}/plugins/ik" state=directory
+
+- name: unarchive ik 
+  unarchive: src="elasticsearch-analysis-ik-{{ES_VERSION}}.zip" dest="/data/elasticsearch-{{ES_VERSION}}/plugins/ik"
+
+- name: install jdk
+  yum: name="java-{{JDK_version}}-openjdk-devel" state=latest
+
+- name: 修改es 属主属组
+  file: path="/data/elasticsearch-{{ES_VERSION}}" group=elasticsearch owner=elasticsearch recurse=yes
+
+- name: 做成服务
+  template: src=elasticsearch.service.j2 dest=/usr/lib/systemd/system/elasticsearch.service 
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+- name: start elasticsearch
+  systemd: name=elasticsearch enabled=true state=started

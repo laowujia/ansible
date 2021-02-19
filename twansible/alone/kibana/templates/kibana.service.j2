@@ -1,0 +1,16 @@
+[Unit]
+Description=Kibana
+#StartLimitIntervalSec=30
+#StartLimitBurst=3
+ 
+[Service]
+Type=simple
+User=elasticsearch
+Group=elasticsearch
+Environment=KIBANA_HOME=/data/kibana-{{ES_VERSION}}
+ExecStart=/data/kibana-{{ES_VERSION}}/bin/kibana "-c /data/kibana-{{ES_VERSION}}/config/kibana.yml"
+Restart=always
+WorkingDirectory=/data/kibana-{{ES_VERSION}}
+ 
+[Install]
+WantedBy=multi-user.target
