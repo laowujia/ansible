@@ -1,0 +1,4 @@
+- hosts: cluster_zookeeper
+  remote_user: root
+  roles:
+   - cluster_zookeeper

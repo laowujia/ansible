@@ -1,0 +1,11 @@
+---
+# vars file for Cluster-kafka+zookeeper
+JDK_VERSION: 1.8.0
+ZOOKEEPER_VERSION: 3.6.1
+KAFKA_VERSION: 2.12-2.5.0
+Zookpeer1_IP: 192.168.228.204
+Zookpeer2_IP: 192.168.228.205
+Zookpeer3_IP: 192.168.228.206
+Kafka_dir: /data/kafka
+Zookpeer_dir: /data/zookeeper
+IP: "{{ansible_all_ipv4_addresses[0]}}"   #部署应用的IP

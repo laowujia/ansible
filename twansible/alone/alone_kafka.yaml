@@ -1,0 +1,4 @@
+- hosts: alone_kafka
+  remote_user: root
+  roles:
+   - alone_kafka

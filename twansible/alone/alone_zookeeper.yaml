@@ -1,0 +1,4 @@
+- hosts: alone_zookeeper
+  remote_user: root
+  roles:
+   - alone_zookeeper

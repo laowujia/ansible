@@ -1,0 +1,41 @@
+- name: install JDK
+  yum: name="java-{{JDK_VERSION}}-openjdk-devel" state=latest
+
+- name: off swap
+  command: swapoff -a 
+
+- name: off swap1
+  lineinfile: path=/etc/fstab regexp="swap" line="^#.*swap.*"  backup=yes
+
+- name: create package Directory
+  file: path=/data/ state=directory
+
+- name: 推送zookpeeper 二进制文件
+  unarchive: src="apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin.tar.gz" dest=/data/
+
+- name: 重命名  zookeeper
+  shell: |
+      cd /data/
+      if [ ! -d zookeeper ];then
+          mv apache-zookeeper-{{ZOOKEEPER_VERSION}}-bin zookeeper
+      fi
+
+- name: create zookeeper db directory
+  file: path=/data/zookeeper/db state=directory
+
+- name: create zookeeper logs directory
+  file: path=/data/zookeeper/logs state=directory
+
+- name: zookpeeper config
+  template: src=zoo.cfg.j2 dest="/data/zookeeper/conf/zoo.cfg"
+ 
+  notify: restart zookeeper
+
+- name: zookeeper serviceconfig
+  template: src=zookeeper.service.j2 dest=/usr/lib/systemd/system/zookeeper.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+- name: start zookeeper service 
+  service: name=zookeeper enabled=true state=started
