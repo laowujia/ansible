@@ -1,4 +1,4 @@
-- hosts: alone_es
+- hosts: kibana
   remote_user: root
   roles:
-   - alone_es
+   - kibana

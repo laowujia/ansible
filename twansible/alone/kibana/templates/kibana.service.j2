@@ -7,10 +7,10 @@ Description=Kibana
 Type=simple
 User=elasticsearch
 Group=elasticsearch
-Environment=KIBANA_HOME=/data/kibana-{{ES_VERSION}}
-ExecStart=/data/kibana-{{ES_VERSION}}/bin/kibana "-c /data/kibana-{{ES_VERSION}}/config/kibana.yml"
+Environment=KIBANA_HOME=/data/kibana-{{KIBANA_VERSION}}
+ExecStart=/data/kibana-{{KIBANA_VERSION}}/bin/kibana "-c /data/kibana-{{KIBANA_VERSION}}/config/kibana.yml"
 Restart=always
-WorkingDirectory=/data/kibana-{{ES_VERSION}}
+WorkingDirectory=/data/kibana-{{KIBANA_VERSION}}
  
 [Install]
 WantedBy=multi-user.target

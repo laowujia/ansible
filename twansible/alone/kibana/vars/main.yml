@@ -1,2 +1,5 @@
 ---
 # vars file for kibana
+Kibana_server_host: "0.0.0.0"
+IP: 192.168.228.208
+KIBANA_VERSION: 7.6.2

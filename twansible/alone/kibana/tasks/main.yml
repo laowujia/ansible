@@ -1,24 +1,30 @@
 ---
-
 - name: create package Directory
   file: path=/data/ state=directory
 
-- name: download kibana
-  get_url: url="http://yum.itestcn.com/github/elasticsearch/release/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz" dest=/data/soft
+- name: add user elasticsearch
+  user: name=elasticsearch state=present
 
-- name: unarchive kibana
-  unarchive: src=/data/soft/kibana-{{ES_VERSION}}-linux-x86_64.tar.gz dest=/data/ copy=no
+- name: 推送kibana二进制文件
+  unarchive: src="kibana-{{KIBANA_VERSION}}-linux-x86_64.tar.gz" dest=/data/
 
-- name: 修改 kibana 目录名
-  command: mv /data/kibana-{{ES_VERSION}}-linux-x86_64 /data/kibana-{{ES_VERSION}}
+- name: 重命名kibana
+  shell: |
+    cd /data/
+    if [ ! -d kibana-{{KIBANA_VERSION}} ];then
+       mv kibana-{{KIBANA_VERSION}}-linux-x86_64 /data/kibana-{{KIBANA_VERSION}}
+    fi
+
+#- name: 修改 kibana 目录名
+#  command: mv /data/kibana-{{ES_VERSION}}-linux-x86_64 /data/kibana-{{ES_VERSION}}
 
 - name: kibana config 
   template: 
    src: kibana.yml.j2 
-   dest: /data/kibana-{{ES_VERSION}}/config/kibana.yml
+   dest: /data/kibana-{{KIBANA_VERSION}}/config/kibana.yml
 
 - name: 修改es 属主属组
-  file: path="/data/kibana-{{ES_VERSION}}" group=elasticsearch owner=elasticsearch recurse=yes
+  file: path="/data/kibana-{{KIBANA_VERSION}}" group=elasticsearch owner=elasticsearch recurse=yes
 
 - name: kibana service
   template: src=kibana.service.j2 dest=/usr/lib/systemd/system/kibana.service 

@@ -4,6 +4,6 @@
 IP: "{{ansible_all_ipv4_addresses[0]}}"
 ES_VERSION: 7.6.2
 Cluster_name: talkedu
-ES_memory: 2G
+ES_memory: 1G
 JDK_version: 1.8.0
 Kibana_server_host: "0.0.0.0"

@@ -31,6 +31,8 @@ function es_Memory () {
 if [ -z "$ES_memory" ] ;then
 ES_memory=2G
 sed -i "s/^ES_memory:.*/ES_memory: "${ES_memory}"/" ${scripts_PATH}/alone/alone_es/vars/main.yml
+else
+sed -i "s/^ES_memory:.*/ES_memory: "${ES_memory}"/" ${scripts_PATH}/alone/alone_es/vars/main.yml
 fi
 }
 
@@ -45,7 +47,6 @@ EOF
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_es.yaml
 echo  "elasticsearch 单机安装完成"
-
 else
 scp $scripts_PATH/package/elasticsearch* $scripts_PATH/cluster/cluster_es/files
 read -r -p "请输入集群版elasticsearch服务器的第一个IP(主节点),例如: 192.168.228.204 : " cluster_IP1
@@ -61,11 +62,10 @@ sed -i "s/^Discovery_seed_hosts:.*/Discovery_seed_hosts: "$cluster_IP1"/" ${scri
 Master_hostname=`ansible "$cluster_IP1" -m shell  -a 'hostname'|awk 'END {print}'`
 echo $Master_hostname
 sed -i "s/^Master_nodes:.*/Master_nodes: "$Master_hostname"/" ${scripts_PATH}/cluster/cluster_es/vars/main.yml
-fi
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts cluster_es.yaml
 echo  "elasticsearch 集群安装完成"
-
+fi
 }
 
 read -r -p "确认是否部署elasticsearch ? [Y/n]:" input_confirm
@@ -81,24 +81,45 @@ read -r -p "请确认部署elasticsearch是集群版还是单机版？默认为�
 es_Mode
 fi
 ##########################################################kibana##########################
-
-
-#function kibana_Version () {
-#if [[ -z "$Kibana_version" || "$Kibana_version" =~ "7.6.2" ]];then
-#Kibana_version=7.6.2
+function kibana_Version () {
+if [[ -z "$Kibana_version" || "$Kibana_version" =~ "7.6.2" ]];then
+Kibana_version=7.6.2
 #rm -f $scripts_PATH/package/kibana*
 #wget -P $scripts_PATH/package  http://yum.itestcn.com/github/elasticsearch/release/kibana-7.6.2-linux-x86_64.tar.gz
-#else
-#wget -P $scripts_PATH/package https://artifacts.elastic.co/downloads/kibana/kibana-"$Kibana_version"-linux-x86_64.tar.gz
-#fi
-#}
-#
-#read -r -p "确认是否部署kibana ? [Y/n]:" input_confirm
-#if [[ $input_confirm =~ $YES_REGULAR ]]; then
-#echo "部署 kibana"
-#read -r -p "请输入kibana 版本号，默认为7.6.2 : " Kibana_version
-#kibana_Version
-#
-#cd ${scripts_PATH}/alone/
-#
-#fi
+sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
+else
+wget -P $scripts_PATH/package https://artifacts.elastic.co/downloads/kibana/kibana-"$Kibana_version"-linux-x86_64.tar.gz
+sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
+fi
+}
+
+
+function kibana_Mode () {
+cat > ${scripts_PATH}/hosts << EOF
+[kibana]
+$kibana_IP
+EOF
+
+cd ${scripts_PATH}/alone/
+scp $scripts_PATH/package/kibana* $scripts_PATH/alone/kibana/files
+ansible-playbook -i ${scripts_PATH}/hosts kibana.yaml
+echo kibana部署完成
+}
+
+read -r -p "确认是否部署kibana ? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 kibana"
+read -r -p "请输入kibana 版本号，默认为7.6.2 : " Kibana_version
+kibana_Version
+
+read -r -p "请输入elasticsearch的服务器IP,如果kibana跟es部署在一起，可以不用输入IP，直接回车即可，例如: 192.168.228.208 : " es_IP
+if [ -z "$es_IP" ] ;then
+read -r -p "请输入部署kibana的服务器IP(建议跟es在一起) 例如: 192.168.228.208 : " kibana_IP
+sed -i  "s/^IP:.*/IP: "${kibana_IP}"/" ${scripts_PATH}/alone/kibana/vars/main.yml
+kibana_Mode
+else
+read -r -p "请输入部署kibana的服务器IP(建议跟es在一起) 例如: 192.168.228.208 : " kibana_IP
+sed -i  "s/^IP:.*/IP: "${es_IP}"/" ${scripts_PATH}/alone/kibana/vars/main.yml
+kibana_Mode
+fi
+fi
