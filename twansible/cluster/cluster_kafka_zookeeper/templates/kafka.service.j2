@@ -1,0 +1,16 @@
+[Unit]
+Description=Kafka Service
+After=network.target zookeeper.service
+ConditionPathExists=/data/kafka
+ 
+[Service]
+Type=forking
+Environment=KAFKA_HOME=/data/kafka
+Environment=SIGNAL=KILL
+ExecStart=/data/kafka/bin/kafka-server-start.sh -daemon /data/kafka/config/server.properties
+ExecStop=/data/kafka/bin/kafka-server-stop.sh
+WorkingDirectory=/data/zookeeper
+PrivateTmp=true
+ 
+[Install]
+WantedBy=multi-user.target

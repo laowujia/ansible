@@ -18,7 +18,7 @@
 ############################# Server Basics #############################
 
 # The id of the broker. This must be set to a unique integer for each broker.
-broker.id=0
+broker.id={{kafka_id}}
 
 ############################# Socket Server Settings #############################
 
@@ -57,7 +57,7 @@ socket.request.max.bytes=104857600
 ############################# Log Basics #############################
 
 # A comma separated list of directories under which to store log files
-log.dirs={{KAFKA_dir}}/logs
+log.dirs=/tmp/kafka-logs
 
 # The default number of log partitions per topic. More partitions allow greater
 # parallelism for consumption, but this will also result in more files across
@@ -120,7 +120,7 @@ log.retention.check.interval.ms=300000
 # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
 # You can also append an optional chroot string to the urls to specify the
 # root directory for all kafka znodes.
-zookeeper.connect={{Zookeepr_IP}}:2181
+zookeeper.connect={{Zookpeer1_IP}}:2181,{{Zookpeer2_IP}}:2181,{{Zookpeer3_IP}}:2181
 
 # Timeout in ms for connecting to zookeeper
 zookeeper.connection.timeout.ms=60000
@@ -134,3 +134,6 @@ zookeeper.connection.timeout.ms=60000
 # We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
 # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
 group.initial.rebalance.delay.ms=0
+
+message.max.bytes=5242880
+replica.fetch.max.bytes=6291456

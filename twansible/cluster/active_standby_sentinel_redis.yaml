@@ -1,0 +1,4 @@
+- hosts: active_standby_sentinel_redis
+  remote_user: root
+  roles:
+   - active_standby_sentinel_redis

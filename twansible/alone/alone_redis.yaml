@@ -1,0 +1,4 @@
+- hosts: alone_redis
+  remote_user: root
+  roles:
+   - alone_redis

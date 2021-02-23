@@ -1,0 +1,63 @@
+- name: install ntp
+  yum : name=ntp state=present
+
+- name: sync time
+  shell: /usr/sbin/ntpdate  cn.pool.ntp.org
+
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: copy tcl
+  copy: src=tcl-8.5.13-8.el7.x86_64.rpm dest=/data/soft/ force=yes
+
+- name: install tcl
+  yum: name=/data/soft/tcl-8.5.13-8.el7.x86_64.rpm state=installed
+
+- name: 推送 redis 二进制文件
+  unarchive: src="redis-{{Redis_version}}.tar.gz" dest=/data/
+
+- name: 重命名  redis
+  shell: |
+      cd /data/
+      if [ ! -d redis ];then
+          mv redis-{{Redis_version}} redis
+      fi
+
+- name: install redis
+  shell: cd /data/redis; make 
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest="{{Redis_dir}}/redis/redis.conf"
+  when: ansible_default_ipv4.address == "{{Redis_master_ip}}"
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest="{{Redis_dir}}/redis/redis.conf"
+  when: not ansible_default_ipv4.address == "{{Redis_master_ip}}"
+
+- name: redis service
+  template: src=redis.service.j2 dest=/usr/lib/systemd/system/redis.service
+  notify:
+  - restart redis
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+- name: start redis
+  service: name=redis enabled=true state=started
+
+- name: sentinel config
+  template: src=sentinel.conf.j2 dest="/data/redis/sentinel.conf"
+
+- name: redissentinel serivce
+  template: src=redissentinel.service.j2 dest=/usr/lib/systemd/system/redissentinel.service
+  notify:
+  - restart redissentinel
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+- name: start sentinel
+  systemd: name=redissentinel enabled=true state=started
+
+- name: start sentinel
+  command: /data/redis/src/redis-sentinel /data/redis/sentinel.conf

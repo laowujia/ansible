@@ -1,0 +1,37 @@
+- name: create package Directory
+  file: path=/data/soft state=directory
+
+- name: copy tcl
+  copy: src=tcl-8.5.13-8.el7.x86_64.rpm dest=/data/soft/ force=yes
+
+- name: install tcl
+  yum: name=/data/soft/tcl-8.5.13-8.el7.x86_64.rpm state=installed
+
+- name: 推送 redis 二进制文件
+  unarchive: src=redis-{{Redis_version}}.tar.gz dest=/data/
+
+- name: 重命名  redis
+  shell: |
+      cd /data/
+      if [ ! -d redis ];then
+          mv redis-{{Redis_version}} redis
+      fi
+
+- name: install redis
+  shell: cd /data/redis; make 
+
+- name: copyconfig file redis
+  template: src=redis.conf.j2 dest={{Redis_dir}}/redis.conf
+ 
+  notify:
+  - restart redis
+
+- name: redis service
+  template: src=redis.service.j2 dest=/usr/lib/systemd/system/redis.service
+
+- name: systemctl daemon-reload
+  systemd: daemon-reload=yes
+
+- name: start redis
+  systemd: name=redis enabled=true state=started
+ 

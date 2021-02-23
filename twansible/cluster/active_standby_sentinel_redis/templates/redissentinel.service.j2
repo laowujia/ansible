@@ -1,0 +1,14 @@
+[Unit]
+Description=Advanced key-value store
+After=network.target
+Documentation=http://redis.io/documentation, man:redis-server(1)
+ 
+[Service]
+Type=forking
+ExecStart=/data/redis/src/redis-sentinel /data/redis/sentinel.conf
+TimeoutStopSec=0
+Restart=always
+WorkingDirectory=/data/redis
+ 
+[Install]
+WantedBy=multi-user.target

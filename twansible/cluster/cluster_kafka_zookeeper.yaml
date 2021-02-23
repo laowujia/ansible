@@ -1,0 +1,4 @@
+- hosts: cluster_kafka_zookeeper
+  remote_user: root
+  roles:
+   - cluster_kafka_zookeeper
