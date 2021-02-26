@@ -1,0 +1,4 @@
+---
+# defaults file for mysql
+Mysql_datadir: /data/mysql/db
+Mysql_log: /data/mysql/log

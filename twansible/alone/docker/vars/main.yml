@@ -1,0 +1,4 @@
+---
+# vars file for alone-docker
+Docker_version: 18.06.3.ce-3.el7
+custom: false

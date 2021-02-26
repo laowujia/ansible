@@ -1,0 +1,24 @@
+---
+# vars file for alone_canal
+Jdk_version: 1.8.0
+Canal_version: 
+Canal_dir: /data/canal/server
+Canal.serverMode: kafka
+sync_res: true
+Canal_destinations_base: talkweb-base    #基础平台同步
+Canal.destinations_res: ",res-sync"      #如果没有部署资源中心，这个默认为空即可
+Canal_mq_servers: 192.168.228.208:9092
+Canal.mq.flatMessage: true     #是否为flat json格式对象
+Canal.mq.compressionType: node
+Canal.mq.acks: all
+Canal.mq.transaction: false    #kafka消息投递是否使用事务
+Talkweb_base_Mysql_dir: 192.168.228.208
+Mysql_port: 3306                           #数据库端口  
+Res_sync_Mysql_dir: 192.168.228.208
+Canal_instance_dbUsername: canal  #数据库连接用户
+Canal_instance_dbPassword: canal_passwd   #canal 连接数据库密码
+Base_mysql_login_password: admin
+Base_mysql_login_user: root
+Res_mysql_login_password: admin
+Res_mysql_login_user: root
+IP: "{{ansible_all_ipv4_addresses[0]}}"

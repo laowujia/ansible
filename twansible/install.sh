@@ -9,6 +9,33 @@ if [ ! -d $scripts_PATH/package ];then
 mkdir $scripts_PATH/package
 fi
 
+echo "部署过程中需要输入版本的，回车为安装默认版本"
+
+##############检查IP 合法性##############
+function CheckIPAddr () {
+echo $1 |grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null;
+if [ $? -ne 0 ]
+then
+	return 1
+fi
+ipaddr=$1
+a=`echo $ipaddr|awk -F . '{print $1}'`
+b=`echo $ipaddr|awk -F . '{print $2}'`
+c=`echo $ipaddr|awk -F . '{print $3}'`
+d=`echo $ipaddr|awk -F . '{print $4}'`
+for num in $a $b $c $d 
+do 
+  if [ $num -gt 255 ] || [ $num -lt 0 ]
+  then
+     return 1
+    fi
+done
+   return 0 
+}
+#CheckIPAddr $1
+
+
+
 #################################################elasticsearch############################################
 
 function es_Version () {
@@ -43,10 +70,15 @@ function es_Mode () {
 if [[ -z "$ES_mode" || "$ES_mode" == "1" ]];then
 scp $scripts_PATH/package/elasticsearch* $scripts_PATH/alone/alone_es/files
 read -r -p "请输入部署单机elasticsearch的服务器IP,例如: 192.168.228.208 : " alone_es_IP
+CheckIPAddr $alone_es_IP
+if [ $? -eq 0 ];then
 cat > ${scripts_PATH}/hosts << EOF
 [alone_es]
 $alone_es_IP
 EOF
+else
+echo "输入 $alone_es_IP IP 不合法"
+fi
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_es.yaml
 echo  "elasticsearch 单机安装完成"
@@ -133,8 +165,8 @@ fi
 function zookeeper_Version () {
 if [[ -z "$Zookeeper_version" || "$Zookeeper_version" =~ "3.6.1" ]];then
 Zookeeper_version=3.6.1
-#rm -f $scripts_PATH/package/apache-zookeeper*
-#wget -P $scripts_PATH/package  http://yum.itestcn.com/github/zookeeper/release/apache-zookeeper-3.6.1-bin.tar.gz
+rm -f $scripts_PATH/package/apache-zookeeper*
+wget -P $scripts_PATH/package  http://yum.itestcn.com/github/zookeeper/release/apache-zookeeper-3.6.1-bin.tar.gz
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
@@ -151,8 +183,8 @@ fi
 function kafka_Version () {
 if [[ -z "$Kafka_version" || "$Kafka_version" =~ "2.5.0" ]];then
 Kafka_version=2.5.0
-#rm -f $scripts_PATH/package/kafka*
-#wget -P $scripts_PATH/package  http://yum.itestcn.com/github/kafka/release/kafka_2.12-2.5.0.tgz
+rm -f $scripts_PATH/package/kafka*
+wget -P $scripts_PATH/package  http://yum.itestcn.com/github/kafka/release/kafka_2.12-2.5.0.tgz
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
@@ -287,4 +319,214 @@ read -r -p "请输入redis 版本号，默认为5.0.8 : " Redis_version
 redis_Version
 read -r -p "请确认部署redis是集群版还是单机版？默认为单机版，输入1为单机版，输入2为集群版 ,输入3为集群哨兵版: " REDIS_mode
 redis_Mode
+fi
+
+#################################################docker###############################################
+function docker_Version () {
+if [[ -z "$Docker_version"  ]];then
+sed -i "s/^custom:.*/custom: false/" ${scripts_PATH}/alone/docker/vars/main.yml
+else
+sed -i "s/^Docker_version:.*/Docker_version: ${Docker_version}/" ${scripts_PATH}/alone/docker/vars/main.yml
+sed -i "s/^custom:.*/custom: true/" ${scripts_PATH}/alone/docker/vars/main.yml
+fi
+}
+
+function docker_IP () {
+if [[ -z "$DOCKER_IP"  ]];then
+echo "未输入部署dokcer的服务器IP，请输入部署docker的服务器IP,例如: 192.168.228.208"
+read -r -p "请输入部署docker的服务器IP,例如: 192.168.228.208 :" DOCKER_IP
+echo [docker] > ${scripts_PATH}/hosts
+for i in $DOCKER_IP;do
+CheckIPAddr $i
+if [ $? -eq 0 ];then
+echo $i >> ${scripts_PATH}/hosts
+else
+echo "$i IP 不合法"
+fi
+done
+read -r -p "请输入docker 版本号，默认为当前最新版本: " Docker_version
+docker_Version
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts docker.yaml
+echo  "docker 安装完成"
+else
+echo [docker] > ${scripts_PATH}/hosts
+for i in $DOCKER_IP;do
+CheckIPAddr $i
+if [ $? -eq 0 ];then
+echo $i >> ${scripts_PATH}/hosts
+else
+echo "$i IP 不合法"
+fi
+done
+read -r -p "请输入docker 版本号，默认为当前最新版本: " Docker_version
+docker_Version
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts docker.yaml
+echo  "docker 安装完成"
+fi
+}
+read -r -p "确认是否部署docker? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 docker"
+read -r -p "请确认部署docker的服务器IP,例如: 192.168.228.208: " DOCKER_IP
+docker_IP
+fi
+
+###################################################mysql#########################################
+function mysql_Version () {
+if [[ -z "$Mysql_version"   ||  "$Mysql_version" =~ "5.7" ]];then
+rm -f $scripts_PATH/package/mysql*
+wget -P $scripts_PATH/package http://dev.mysql.com/get/mysql57-community-release-el7-10.noarch.rpm
+elif [[ "$Mysql_version" =~ "5.6" ]];then
+rm -f $scripts_PATH/package/mysql*
+wget -P $scripts_PATH/package  http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+else
+echo "请输入mysql版本号 [5.6|5.7] "
+fi
+}
+
+function mysql_Mode () {
+if [[ -z "$mysql_mode" || "$mysql_mode" == "1" ]];then
+scp $scripts_PATH/package/mysql* $scripts_PATH/alone/alone_mysql/files
+read -r -p "请输入部署单机mysql的服务器IP,例如: 192.168.228.208 : " alone_mysql_IP
+cat > ${scripts_PATH}/hosts << EOF
+[alone_mysql]
+$alone_mysql_IP
+EOF
+read -r -p "请输入mysql root 密码: " Mysql_user_root_password
+sed -i "s/^mysql_login_password:.*/mysql_login_password: ${Mysql_user_root_password}/" ${scripts_PATH}/alone/alone_mysql/vars/main.yml
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts alone_mysql.yaml
+echo  "mysql 单机部署完成"
+else
+scp $scripts_PATH/package/mysql* $scripts_PATH/cluster/active_standby_mysql/files
+read -r -p "请输入主从版mysql主服务器IP,例如: 192.168.228.204 : " AS_MYSQL_IP1
+read -r -p "请输入主从版mysql从服务器IP,例如: 192.168.228.205 : " AS_MYSQL_IP2
+cat > ${scripts_PATH}/hosts << EOF
+[active_standby_mysql]
+$AS_MYSQL_IP1 mysql_role="master"
+$AS_MYSQL_IP2 mysql_role="slave"
+EOF
+sed -i "s/^master_ip:.*/master_ip: ${AS_MYSQL_IP1}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
+read -r -p "请输入mysql root 密码: " Mysql_user_root_password
+sed -i "s/^mysql_root_password:.*/mysql_root_password: ${Mysql_user_root_password}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
+cd ${scripts_PATH}/cluster/
+ansible-playbook -i ${scripts_PATH}/hosts active_standby_mysql.yaml
+echo  "mysql主从部署完成"
+fi
+}
+
+read -r -p "确认是否部署mysql? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 mysql"
+read -r -p "请输入mysql 版本号，默认为5.7最新版 : " Mysql_version
+mysql_Version
+read -r -p "请确认部署mysql是集群版还是单机版？默认为单机版，输入1为单机版，输入2为主从版 : " mysql_mode
+mysql_Mode
+fi
+
+
+##########################################################canal###################################################
+function canal_Version () {
+if [[ -z "$Canal_version"   ||  "$Canal_version" =~ "1.1.5" ]];then
+rm -f $scripts_PATH/package/canal*
+wget -P $scripts_PATH/package http://yum.itestcn.com/github/canal/canal.deployer-1.1.5-SNAPSHOT.tar.gz
+sed -i "s/^Canal_version:.*/Canal_version: ${Canal_version}/" ${scripts_PATH}/alone/canal/vars/main.yml
+else
+echo "目前只写的有1.1.5版本的canal "
+fi
+}
+
+function canal_mode () {
+if [[ -z "$Canal_mode"   ||  "$Canal_mode" =~ "1" ]];then
+sed -i "s/^sync_res:.*/sync_res: false/" ${scripts_PATH}/alone/canal/vars/main.yml
+echo "当前同步只有基础平台"
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
+echo  "canal部署完成"
+else
+sed -i "s/^sync_res:.*/sync_res: true/" ${scripts_PATH}/alone/canal/vars/main.yml
+Res_mysql_ip
+read -r -p "请输入基础平台数据库账号和密码，空格隔开，确认能够远程登录，并且能够创建用户，否则会出问题 例如：mysql_user mysql_password  :  " res_mysql_user res_mysql_password
+sed -i "s/^Res_mysql_login_user:.*/Res_mysql_login_user: ${res_mysql_user}/" ${scripts_PATH}/alone/canal/vars/main.yml
+sed -i "s/^Res_mysql_login_password:.*/Res_mysql_login_password: ${res_mysql_password}/" ${scripts_PATH}/alone/canal/vars/main.yml
+fi
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
+echo  "canal部署完成"
+}
+
+function Base_mysql_ip () {
+if [[ -z "$base_mysql_ip" ]];then
+read -r -p "请输入基础平台数据库IP，如：192.168.228.208 : " base_mysql_ip
+CheckIPAddr $base_mysql_ip
+if [ $? -eq 0 ];then
+sed -i "s/^Talkweb_base_Mysql_dir:.*/Talkweb_base_Mysql_dir: ${base_mysql_ip}/" ${scripts_PATH}/alone/canal/vars/main.yml
+else
+echo "输入的IP 不合法 88 "
+exit 1
+fi
+else
+CheckIPAddr $base_mysql_ip
+if [ $? -eq 0 ];then
+sed -i "s/^Talkweb_base_Mysql_dir:.*/Talkweb_base_Mysql_dir: ${base_mysql_ip}/" ${scripts_PATH}/alone/canal/vars/main.yml
+else
+echo "输入的IP 不合法 88 "
+fi
+fi
+}
+
+function Res_mysql_ip () {
+read -r -p "请输入资源中心数据库IP，如：192.168.228.208 : " res_mysql_ip
+if [[ -z "$res_mysql_ip" ]];then
+read -r -p "请输入基础平台数据库IP，如：192.168.228.208 : " res_mysql_ip
+CheckIPAddr $res_mysql_ip
+if [ $? -eq 0 ];then
+sed -i "s/^Res_sync_Mysql_dir:.*/Res_sync_Mysql_dir: ${res_mysql_ip}/" ${scripts_PATH}/alone/canal/vars/main.yml
+else
+echo "输入的IP 不合法 88 "
+exit 1
+fi
+else
+CheckIPAddr $res_mysql_ip
+if [ $? -eq 0 ];then
+sed -i "s/^Res_sync_Mysql_dir:.*/Res_sync_Mysql_dir: ${res_mysql_ip}/" ${scripts_PATH}/alone/canal/vars/main.yml
+else
+echo "输入的IP 不合法 88 "
+fi
+fi
+}
+
+function canal_IP () {
+if [[ -z "$Canal_IP" ]];then
+read -r -p "请输入部署canal服务器IP ，例: 192.168.228.208 : " Canal_IP
+CheckIPAddr $Canal_IP
+if [  $? -eq 0 ];then 
+cat > ${scripts_PATH}/hosts << EOF
+[canal]
+$Canal_IP
+EOF
+else
+echo "$Canal_IP IP 不合法"
+fi
+fi
+}
+
+read -r -p "确认是否部署canal? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 canal"
+read -r -p "请输入canal 版本号，默认为1.1.5 : " Canal_version
+#canal_Version
+read -r -p "请输入部署canal服务器IP ，例: 192.168.228.208 : " Canal_IP
+canal_IP
+read -r -p "请输入kafka地址和端口，如：192.168.228.203:9092 : " kafka_ip_port
+sed -i "s/^Canal_mq_servers:.*/Canal_mq_servers: ${kafka_ip_port}/" ${scripts_PATH}/alone/canal/vars/main.yml
+read -r -p "请输入基础平台数据库IP，如：192.168.228.208 : " base_mysql_ip
+Base_mysql_ip
+read -r -p "请输入基础平台数据库账号和密码，空格隔开，确认能够远程登录，并且能够创建用户，否则会出问题 例如：mysql_user mysql_password  :  " mysql_user mysql_password
+sed -i "s/^Base_mysql_login_user:.*/Base_mysql_login_user: ${mysql_user}/" ${scripts_PATH}/alone/canal/vars/main.yml
+sed -i "s/^Base_mysql_login_password:.*/Base_mysql_login_password: ${mysql_password}/" ${scripts_PATH}/alone/canal/vars/main.yml
+read -r -p "请确认是否需要同步资源中心，默认同步基础平台, 输入1为只同步基础平台，输入2同时同步基础平台和资源中心 : " Canal_mode
+canal_mode
 fi

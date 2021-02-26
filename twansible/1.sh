@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 function CheckIPAddr () {
 echo $1 |grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null;
 if [ $? -ne 0 ]
@@ -19,10 +19,4 @@ do
 done
    return 0 
 }
-if [ $# -ne 1 ] ;then
-   echo "Usage: $0 ipaddress."
-   exit
-else
 CheckIPAddr $1
-fi
-

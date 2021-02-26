@@ -1,0 +1,4 @@
+- hosts: test_alone_canal
+  remote_user: root
+  roles:
+   - alone-canal

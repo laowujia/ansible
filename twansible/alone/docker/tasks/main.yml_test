@@ -1,0 +1,2 @@
+- name: start 
+  debug: msg="The  Vaule is {{ custom }}"

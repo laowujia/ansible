@@ -1,0 +1,33 @@
+- name: 安装依赖
+  yum:
+   name: ['yum-utils','ntp','device-mapper-persistent-data','lvm2','nfs-utils','rpcbind']
+   state: latest
+   update_cache: yes
+
+- name: 安装yum源
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+- name: 安装docker
+  yum: name=docker-ce state=latest update_cache=yes
+  when: not custom 
+
+- name: 安装docker
+  yum: name=docker-ce-{{Docker_version}} state=present
+  when: custom
+
+- name: start docker
+  systemd: name=docker enabled=yes state=started
+
+- name: stop docker
+  service: name=docker state=stopped
+- name: 修改docker数据目录
+  command: mv /var/lib/docker /data/
+
+- name: 修改docker数据目录1
+  file: src=/data/docker dest=/var/lib/docker state=link
+
+- name: configure docker
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+
+- name: start docker1
+  systemd: name=docker state=started

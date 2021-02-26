@@ -1,4 +1,3 @@
-[cluster_sentinel_redis]
-192.168.228.204
-192.168.228.205
-192.168.228.206
+[active_standby_mysql]
+192.168.228.204 mysql_role="master"
+192.168.228.205 mysql_role="slave"

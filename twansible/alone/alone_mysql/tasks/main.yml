@@ -1,0 +1,91 @@
+---
+# tasks file for mysql
+- name: copy mysql  yum Repository
+  copy: src=mysql57-community-release-el7-10.noarch.rpm dest=/opt/mysql57-community-release-el7-10.noarch.rpm force=yes
+
+- name: install mysql yum Repository
+  yum: name=/opt/mysql57-community-release-el7-10.noarch.rpm state=installed
+
+- name: installd mysql
+  yum:
+   name: ['mysql-community-server','mysql-community-devel','python-pip','python-devel'] 
+   state: latest 
+   update_cache: yes
+
+- name: installed mysql-python
+  pip: name=mysql-python state=latest
+
+- name: Start Mysql service after install
+  systemd:
+      name: mysqld
+      state: started
+
+- name: reset mysql default password 
+  shell: mysql_secret=$(grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}') && mysql -uroot --password=${mysql_secret} --connect-expired-password  -e 'set global validate_password_policy=LOW;set global validate_password_policy=0;set global validate_password_length=1;ALTER USER USER() IDENTIFIED BY "{{ mysql_login_password }}";' 
+
+- name: create mysql datadir 
+  file: 
+   path: "{{Mysql_datadir}}" 
+   state: directory 
+   owner: mysql 
+   group: mysql
+
+- name: create mysql logdir
+  file: 
+   path: "{{Mysql_log}}"
+   state: directory 
+   owner: mysql 
+   group: mysql
+
+- name: stop Mysql
+  systemd:
+   name: mysqld
+   state: stopped
+
+- name: changed mysql datadir
+  shell: mv  /var/lib/mysql/* {{Mysql_datadir}}
+
+- name:  configfile MySQL
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+
+- name: Start Mysql service
+  systemd:
+      name: mysqld
+      state: started
+
+#- name: Create Application database
+#  mysql_db:
+#      name: "{{mysql_db}}"
+#      login_user: "{{mysql_login_user}}"
+#      login_password: "{{mysql_login_password}}"
+#      state: present
+
+- name: 开放root外部访问
+  mysql_user:
+      name: "{{mysql_login_user}}"
+      password: "{{mysql_login_password}}"
+      host: '%'
+      priv: '*.*:ALL,GRANT'
+      login_user: "{{mysql_login_user}}"
+      login_password: "{{mysql_login_password}}"
+      state: present
+
+- name: Create Application DB user
+  mysql_user:
+      name: "{{mysql_user}}"
+      password: "{{mysql_user_password}}"
+      priv: '*.*:SELECT,REPLICATION SLAVE,REPLICATION CLIENT,GRANT'
+      login_user: "{{mysql_login_user}}"
+      login_password: "{{mysql_login_password}}"
+      state: present
+
+- name: create db_backup directory
+  file: path="{{back_db_directory}}" state=directory
+
+- name: backup script
+  template: src=mysql_db_backup.sh.j2 dest="{{back_directory}}/mysql_db_backup.sh" mode=0755
+
+- name: cron backup script
+  cron: minute=0 hour=2 day=* month=* weekday=* job=/bin/sh "{{back_directory}}/mysql_db_backup.sh"
