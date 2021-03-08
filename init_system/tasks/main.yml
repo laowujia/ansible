@@ -29,11 +29,9 @@
 - name : stop selinux
   command: /sbin/setenforce 0
 
-
-
 - name: install package
   yum: 
-   name: ['vim','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp'] 
+   name: ['vim','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','bash-completion'] 
    state: latest 
    update_cache: yes
 
