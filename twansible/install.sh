@@ -225,10 +225,10 @@ EOF
 sed -i "s/^Zookpeer1_IP:.*/Zookpeer1_IP: ${cluster_ZK_KAFKA_IP1}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
 sed -i "s/^Zookpeer2_IP:.*/Zookpeer2_IP: ${cluster_ZK_KAFKA_IP2}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
 sed -i "s/^Zookpeer3_IP:.*/Zookpeer3_IP: ${cluster_ZK_KAFKA_IP3}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
-fi
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts cluster_kafka_zookeeper.yaml
 echo  "zookeeper+kafka 集群部署完成"
+fi
 }
 
 read -r -p "确认是否部署zookeeper+kafka? 默认zk和kafka是安装在一起的,(同为单机，同为集群，如果有特殊情况，请单独部署) [Y/n]:" input_confirm
@@ -517,7 +517,7 @@ read -r -p "确认是否部署canal? [Y/n]:" input_confirm
 if [[ $input_confirm =~ $YES_REGULAR ]]; then
 echo "部署 canal"
 read -r -p "请输入canal 版本号，默认为1.1.5 : " Canal_version
-#canal_Version
+canal_Version
 read -r -p "请输入部署canal服务器IP ，例: 192.168.228.208 : " Canal_IP
 canal_IP
 read -r -p "请输入kafka地址和端口，如：192.168.228.203:9092 : " kafka_ip_port
