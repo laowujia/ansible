@@ -18,7 +18,7 @@
 - name: create canal directory
   file: path={{Canal_dir}}  state=directory
 
-- name: 推送 canal  二进制问及那
+- name: 推送 canal  二进制文件
   unarchive: src="canal.deployer-{{Canal_version}}-SNAPSHOT.tar.gz" dest={{Canal_dir}}
 
 - name: canal config
@@ -38,6 +38,7 @@
       login_password: "{{Base_mysql_login_password}}"
       login_host: "{{Talkweb_base_Mysql_dir}}"
       state: present
+  ignore_errors: yes
 
 - name: talkweb-base config
   template: src=talkweb-base_instance.properties.j2 dest="{{Canal_dir}}/conf/talkweb-base/instance.properties"

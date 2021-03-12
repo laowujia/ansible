@@ -76,6 +76,7 @@ cat > ${scripts_PATH}/hosts << EOF
 [alone_es]
 $alone_es_IP
 EOF
+sed -i "s/^IP:.*/IP: ${alone_es_IP}/" ${scripts_PATH}/alone/canal/vars/main.yml
 else
 echo "输入 $alone_es_IP IP 不合法"
 fi
@@ -430,12 +431,14 @@ fi
 ##########################################################canal###################################################
 function canal_Version () {
 if [[ -z "$Canal_version"   ||  "$Canal_version" =~ "1.1.5" ]];then
-rm -f $scripts_PATH/package/canal*
-wget -P $scripts_PATH/package http://yum.itestcn.com/github/canal/canal.deployer-1.1.5-SNAPSHOT.tar.gz
+Canal_version=1.1.5
+#rm -f $scripts_PATH/package/canal*
+#wget -P $scripts_PATH/package http://yum.itestcn.com/github/canal/canal.deployer-1.1.5-SNAPSHOT.tar.gz
 sed -i "s/^Canal_version:.*/Canal_version: ${Canal_version}/" ${scripts_PATH}/alone/canal/vars/main.yml
 else
 echo "目前只写的有1.1.5版本的canal "
 fi
+scp $scripts_PATH/package/canal* ${scripts_PATH}/alone/canal/files/
 }
 
 function canal_mode () {
@@ -451,10 +454,10 @@ Res_mysql_ip
 read -r -p "请输入基础平台数据库账号和密码，空格隔开，确认能够远程登录，并且能够创建用户，否则会出问题 例如：mysql_user mysql_password  :  " res_mysql_user res_mysql_password
 sed -i "s/^Res_mysql_login_user:.*/Res_mysql_login_user: ${res_mysql_user}/" ${scripts_PATH}/alone/canal/vars/main.yml
 sed -i "s/^Res_mysql_login_password:.*/Res_mysql_login_password: ${res_mysql_password}/" ${scripts_PATH}/alone/canal/vars/main.yml
-fi
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
 echo  "canal部署完成"
+fi
 }
 
 function Base_mysql_ip () {
@@ -507,8 +510,18 @@ cat > ${scripts_PATH}/hosts << EOF
 [canal]
 $Canal_IP
 EOF
+sed -i "s/^IP:.*/IP: ${Canal_IP}/" ${scripts_PATH}/alone/canal/vars/main.yml
 else
 echo "$Canal_IP IP 不合法"
+fi
+else
+CheckIPAddr $Canal_IP
+if [  $? -eq 0 ];then
+cat > ${scripts_PATH}/hosts << EOF
+[canal]
+$Canal_IP
+EOF
+sed -i "s/^IP:.*/IP: ${Canal_IP}/" ${scripts_PATH}/alone/canal/vars/main.yml
 fi
 fi
 }
