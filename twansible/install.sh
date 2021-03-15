@@ -208,6 +208,7 @@ cat > ${scripts_PATH}/hosts << EOF
 [alone_kafka_zookeeper]
 $alone_zk_kafka_IP
 EOF
+sed -i  "s/^IP:.*/IP: "${alone_zk_kafka_IP}"/" ${scripts_PATH}/alone/alone_kafka/vars/main.yml
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_kafka_zookeeper.yaml
 echo  "zookeeper+kafka 单机部署完成"
