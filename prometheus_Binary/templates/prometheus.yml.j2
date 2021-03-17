@@ -43,3 +43,8 @@ scrape_configs:
     consul_sd_configs:
     - server: {{Consul_IP}}:8500
       services: [{{Group_name2}}]
+
+  - job_name: 'mysql'
+    static_configs:
+    - targets: ['192.168.228.207:9104']
+

@@ -53,6 +53,10 @@
   copy: src=Alarm_rules.yml dest="{{Monitor_dir}}/prometheus/rules"
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
+- name: 推送node_exporter告警规则文件
+  copy: src=node_exporter.yml dest="{{Monitor_dir}}/prometheus/rules"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
 - name: 推送prometheus配置文件
   template: src=prometheus.yml.j2 dest="{{Monitor_dir}}/prometheus/prometheus.yml"
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
