@@ -35,6 +35,21 @@ done
 #CheckIPAddr $1
 
 
+#####################检查ansible 是否安装。为安装则安装###################
+
+function Checkansible () {
+if ! type ansible  >/dev/null 2>&1;then
+echo  ansible 未安装a,现正在安装ansible
+yum list |grep ansible
+if [ $? -eq 0 ];then
+yum install -y  ansible 
+else
+echo "yum 源中没有ansible,请手动安装ansible"
+fi
+fi
+}
+
+Checkansible
 
 #################################################elasticsearch############################################
 
@@ -82,7 +97,12 @@ echo "输入 $alone_es_IP IP 不合法"
 fi
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_es.yaml
+if [ -eq 0 ];then
 echo  "elasticsearch 单机安装完成"
+else
+echo "elasticsearch安装失败，请重新安装"
+exit 1
+fi
 else
 scp $scripts_PATH/package/elasticsearch* $scripts_PATH/cluster/cluster_es/files
 read -r -p "请输入集群版elasticsearch服务器的第一个IP(主节点),例如: 192.168.228.204 : " cluster_IP1
@@ -99,7 +119,12 @@ Master_hostname=`ansible "$cluster_IP1" -m shell  -a 'hostname'|awk 'END {print}
 sed -i "s/^Master_nodes:.*/Master_nodes: "$Master_hostname"/" ${scripts_PATH}/cluster/cluster_es/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts cluster_es.yaml
+if [ -eq 0 ];then
 echo  "elasticsearch 集群安装完成"
+else
+echo "elasticsearch 集群安装失败，请重新安装"
+exit 1
+fi
 fi
 }
 
@@ -139,7 +164,12 @@ EOF
 cd ${scripts_PATH}/alone/
 scp $scripts_PATH/package/kibana* $scripts_PATH/alone/kibana/files
 ansible-playbook -i ${scripts_PATH}/hosts kibana.yaml
+if [ -eq 0 ];then
 echo kibana部署完成
+else
+echo "kibana部署失败，请重新部署"
+exit 1
+fi
 }
 
 read -r -p "确认是否部署kibana ? [Y/n]:" input_confirm
@@ -211,7 +241,12 @@ EOF
 sed -i  "s/^IP:.*/IP: "${alone_zk_kafka_IP}"/" ${scripts_PATH}/alone/alone_kafka/vars/main.yml
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_kafka_zookeeper.yaml
+if [ -eq 0 ];then
 echo  "zookeeper+kafka 单机部署完成"
+else
+echo "zookeeper+kafka 单机部署失败，请重新部署"
+exit 1
+fi
 else
 scp $scripts_PATH/package/apache-zookeeper* $scripts_PATH/cluster/cluster_kafka_zookeeper/files
 scp $scripts_PATH/package/kafka* $scripts_PATH/cluster/cluster_kafka_zookeeper/files
@@ -229,7 +264,12 @@ sed -i "s/^Zookpeer2_IP:.*/Zookpeer2_IP: ${cluster_ZK_KAFKA_IP2}/" ${scripts_PAT
 sed -i "s/^Zookpeer3_IP:.*/Zookpeer3_IP: ${cluster_ZK_KAFKA_IP3}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts cluster_kafka_zookeeper.yaml
+if [ -eq 0 ];then 
 echo  "zookeeper+kafka 集群部署完成"
+else
+echo "zookeeper+kafka 集群部署失败，请重新部署"
+exit 1
+fi
 fi
 }
 
@@ -277,7 +317,12 @@ $alone_redis_IP
 EOF
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_redis.yaml
+if [ -eq 0 ];then
 echo  "redis 单机安装完成"
+else
+echo "redis 单机部署失败，请重新部署"
+exit 1
+fi
 elif [ "$REDIS_mode" == "2" ];then
 scp $scripts_PATH/package/redis* $scripts_PATH/cluster/active_standby_redis/files
 scp $scripts_PATH/package/tcl* $scripts_PATH/cluster/active_standby_redis/files
@@ -293,7 +338,12 @@ EOF
 sed -i "s/^Redis_master_ip:.*/Redis_master_ip: "$cluster_REDIS_IP1"/" ${scripts_PATH}/cluster/active_standby_redis/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts active_standby_redis.yaml
+if [ -eq 0 ];then
 echo  "redis 主从安装完成"
+else
+echo "redis 主从部署失败，请重新部署"
+exit 1
+fi
 else 
 scp $scripts_PATH/package/redis* $scripts_PATH/cluster/active_standby_sentinel_redis/files
 scp $scripts_PATH/package/tcl* $scripts_PATH/cluster/active_standby_sentinel_redis/files
@@ -309,7 +359,12 @@ EOF
 sed -i "s/^Redis_master_ip:.*/Redis_master_ip: "$cluster_REDIS_SEN_IP1"/" ${scripts_PATH}/cluster/active_standby_sentinel_redis/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts active_standby_sentinel_redis.yaml
+if [ -eq 0 ];then
 echo  "redis 主从哨兵版安装完成"
+else
+echo "redis 主从哨兵版安装失败，请重新部署"
+exit 1
+fi
 fi
 }
 
@@ -350,7 +405,12 @@ read -r -p "请输入docker 版本号，默认为当前最新版本: " Docker_ve
 docker_Version
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts docker.yaml
+if [ -eq 0 ];then
 echo  "docker 安装完成"
+else
+echo "doker 安装失败,请重新安装"
+exit 1
+fi
 else
 echo [docker] > ${scripts_PATH}/hosts
 for i in $DOCKER_IP;do
@@ -365,7 +425,12 @@ read -r -p "请输入docker 版本号，默认为当前最新版本: " Docker_ve
 docker_Version
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts docker.yaml
+if [ -eq 0 ];then
 echo  "docker 安装完成"
+else
+echo "doker 安装失败,请重新安装"
+exit 1
+fi
 fi
 }
 read -r -p "确认是否部署docker? [Y/n]:" input_confirm
@@ -400,7 +465,12 @@ read -r -p "请输入mysql root 密码: " Mysql_user_root_password
 sed -i "s/^mysql_login_password:.*/mysql_login_password: ${Mysql_user_root_password}/" ${scripts_PATH}/alone/alone_mysql/vars/main.yml
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_mysql.yaml
+if [ -eq 0 ];then
 echo  "mysql 单机部署完成"
+else
+echo "mysql 单机部署失败，请重新部署"
+exit 1
+fi
 else
 scp $scripts_PATH/package/mysql* $scripts_PATH/cluster/active_standby_mysql/files
 read -r -p "请输入主从版mysql主服务器IP,例如: 192.168.228.204 : " AS_MYSQL_IP1
@@ -415,7 +485,12 @@ read -r -p "请输入mysql root 密码: " Mysql_user_root_password
 sed -i "s/^mysql_root_password:.*/mysql_root_password: ${Mysql_user_root_password}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts active_standby_mysql.yaml
+if [ -eq 0 ];then
 echo  "mysql主从部署完成"
+else
+echo "mysql主从部署失败，请重新部署"
+exit 1
+fi
 fi
 }
 
@@ -448,7 +523,12 @@ sed -i "s/^sync_res:.*/sync_res: false/" ${scripts_PATH}/alone/canal/vars/main.y
 echo "当前同步只有基础平台"
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
+if [ -eq 0];then
 echo  "canal部署完成"
+else
+echo "canal部署失败，请重新部署"
+exit 1
+fi
 else
 sed -i "s/^sync_res:.*/sync_res: true/" ${scripts_PATH}/alone/canal/vars/main.yml
 Res_mysql_ip
@@ -457,7 +537,12 @@ sed -i "s/^Res_mysql_login_user:.*/Res_mysql_login_user: ${res_mysql_user}/" ${s
 sed -i "s/^Res_mysql_login_password:.*/Res_mysql_login_password: ${res_mysql_password}/" ${scripts_PATH}/alone/canal/vars/main.yml
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
+if [ -eq 0 ];then
 echo  "canal部署完成"
+else
+echo "canal部署失败，请重新部署"
+exit 1
+fi
 fi
 }
 
@@ -544,3 +629,6 @@ sed -i "s/^Base_mysql_login_password:.*/Base_mysql_login_password: ${mysql_passw
 read -r -p "请确认是否需要同步资源中心，默认同步基础平台, 输入1为只同步基础平台，输入2同时同步基础平台和资源中心 : " Canal_mode
 canal_mode
 fi
+
+
+#############################################promethues######################
