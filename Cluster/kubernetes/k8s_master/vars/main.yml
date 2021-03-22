@@ -1,0 +1,5 @@
+---
+# vars file for k8s_master
+#
+Alone_docker_dir: "{{ lookup('env', 'PWD') }}" 
+Locathost_IP: 

@@ -1,0 +1,3 @@
+---
+# vars file for k8s_init
+Kubeadm: 1.17.5
