@@ -9,8 +9,6 @@ if [ ! -d $scripts_PATH/package ];then
 mkdir $scripts_PATH/package
 fi
 
-echo "部署过程中需要输入版本的，回车为安装默认版本"
-
 ##############检查IP 合法性##############
 function CheckIPAddr () {
 echo $1 |grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null;
@@ -50,6 +48,59 @@ fi
 }
 
 Checkansible
+
+
+###############################是否做免密登录###########################
+echo "StrictHostKeyChecking no" > ~/.ssh/config
+
+function Alike_password() {
+read -r -p "请输入需要做root免密登录的IP,以空格分隔。例：192.168.228.200 192.168.228.201: " Password_IP
+echo [password] > ${scripts_PATH}/hosts
+for i in $Password_IP;do
+CheckIPAddr $i
+if [ $? -eq 0 ];then
+echo $i >> ${scripts_PATH}/hosts
+else
+echo "$i IP 不合法"
+fi
+done
+read -s -r -p "如果所有服务器的root密码都是一样的，请输入root密码：" Password
+if [ -f /root/.ssh/id_rsa.pub ];then
+ansible -i ${scripts_PATH}/hosts  -m authorized_key -a "user=root state=present key=\"{{ lookup('file', '/root/.ssh/id_rsa.pub') }} \"" -k $Password
+else
+ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
+ansible -i ${scripts_PATH}/hosts  -m authorized_key -a "user=root state=present key=\"{{ lookup('file', '/root/.ssh/id_rsa.pub') }} \"" -k $Password
+fi
+}
+
+
+function Diff_password () {
+read -r -p "请输入服务器的IP和密码，例如：192.168.228.200  root_password " IP ROOT_password
+while 
+do
+echo [password] > ${scripts_PATH}/hosts
+CheckIPAddr $IP
+if [ $? -eq 0 ];then
+echo $IP >> ${scripts_PATH}/hosts
+else
+echo "$IP IP 不合法"
+fi
+
+done
+}
+
+read -r -p "确认是否做root免密登录? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "进行root免密登录配置"
+
+read -r -p "确认是服务器的root是否相同？默认为root密码相同，输入1为密码相同，输入2为密码不同 ：" passwd_diif
+if [[ -z "$passwd_diif" || "$passwd_diif" == "1" ]];then 
+Alike_password
+elif [[ "$passwd_diif" == "2" ]];then
+
+
+
+echo "部署过程中需要输入版本的，回车为安装默认版本"
 
 #################################################elasticsearch############################################
 
