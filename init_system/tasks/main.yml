@@ -28,24 +28,26 @@
 
 - name : stop selinux
   command: /sbin/setenforce 0
+  ignore_errors: True
 
 - name: install package
   yum: 
    name: ['vim','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','bash-completion'] 
    state: latest 
    update_cache: yes
+   ignore_errors: True
 
 - name: 配置系统内核
   lineinfile:
    dest: /etc/security/limits.conf
    line: '* soft nofile 65535'
-  ignore_errors: Ture
+  ignore_errors: True
 
 - name: 配置系统内核1
   lineinfile:
    dest: /etc/security/limits.conf
    line: '* hard nofile 65535'
-  ignore_errors: Ture
+  ignore_errors: True
 
 - name: optimization | sysctl.
   blockinfile:
