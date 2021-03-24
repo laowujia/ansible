@@ -40,7 +40,7 @@
    name: ['vim','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','yum-utils','device-mapper-persistent-data','lvm2'] 
    state: latest 
    update_cache: yes
-  ignore_errors: True
+  ignore_errors: Ture
    
 - name: 配置系统内核
   lineinfile:
@@ -132,8 +132,6 @@
 - name: start docker
   systemd: name=docker enabled=yes state=started
 
-- name: start kubelet
-  systemd: name=kubelet enabled=yes state=started
 
 - name: 创建cni二进制目录
   file: path=/opt/cni/bin state=directory

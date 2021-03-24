@@ -24,10 +24,10 @@
       fi
 
 - name: 推送kubelet配置文件（conf）
-  template: src=kubelet.conf.j2 dest="{{K8s_path}}/cfg/kubelet.conf
+  template: src=kubelet.conf.j2 dest="{{K8s_path}}/cfg/kubelet.conf"
 
 - name: 推送kubelet配置文件（yml）
-  template: src=kubelet-config.yml.j2 dest="{{K8s_path}}/cfg/kubelet-config.yml
+  template: src=kubelet-config.yml.j2 dest="{{K8s_path}}/cfg/kubelet-config.yml"
 
 - name: 推送bootstrap.kubeconfig 文件
   copy: src=bootstrap.kubeconfig dest="{{K8s_path}}/cfg/"

@@ -305,36 +305,71 @@ cd $scripts_PATH/package/k8s/
 /usr/local/bin/cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
 fi
 
-read -r -p "请输入部署K8S的IP段 ，例: 192.168.228.0/24 :" IP_segment
+rm -f $scripts_PATH/package/k8s/server-csr.json
+read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个回车，输入完毕后回车,例: 192.168.228.208 :" IP
+i=1
+echo "{" >>$scripts_PATH/package/k8s/server-csr.json
+echo "    \"CN\": \"kubernetes\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "    \"hosts\": ["   >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"10.0.0.1\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"127.0.0.1\"," >>$scripts_PATH/package/k8s/server-csr.json
+while [ -n "$IP" ]
+do
+echo "      \"${IP}\"," >>$scripts_PATH/package/k8s/server-csr.json
+read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个回车,输入完毕后回车,例: 192.168.228.208 :" IP
+((i++))
+done
+echo "      \"kubernetes\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"kubernetes.default\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"kubernetes.default.svc\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"kubernetes.default.svc.cluster\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "      \"kubernetes.default.svc.cluster.local\"" >>$scripts_PATH/package/k8s/server-csr.json
+echo "    ]," >>$scripts_PATH/package/k8s/server-csr.json
+echo "    \"key\": {" >>$scripts_PATH/package/k8s/server-csr.json
+echo "        \"algo\": \"rsa\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "        \"size\": 2048" >>$scripts_PATH/package/k8s/server-csr.json
+echo "    }," >>$scripts_PATH/package/k8s/server-csr.json
+echo "    \"names\": [" >>$scripts_PATH/package/k8s/server-csr.json
+echo "        {" >>$scripts_PATH/package/k8s/server-csr.json
+echo "            \"C\": \"CN\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "            \"L\": \"BeiJing\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "            \"ST\": \"BeiJing\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "            \"O\": \"k8s\"," >>$scripts_PATH/package/k8s/server-csr.json
+echo "            \"OU\": \"System\"" >>$scripts_PATH/package/k8s/server-csr.json
+echo "        }" >>$scripts_PATH/package/k8s/server-csr.json
+echo "    ]" >>$scripts_PATH/package/k8s/server-csr.json
+echo "}" >>$scripts_PATH/package/k8s/server-csr.json
 
-cat > $scripts_PATH/package/k8s/server-csr.json << EOF
-{
-    "CN": "kubernetes",
-    "hosts": [
-      "10.0.0.1",
-      "127.0.0.1",
-      "$IP_segment",
-      "kubernetes",
-      "kubernetes.default",
-      "kubernetes.default.svc",
-      "kubernetes.default.svc.cluster",
-      "kubernetes.default.svc.cluster.local"
-    ],
-    "key": {
-        "algo": "rsa",
-        "size": 2048
-    },
-    "names": [
-        {
-            "C": "CN",
-            "L": "BeiJing",
-            "ST": "BeiJing",
-            "O": "k8s",
-            "OU": "System"
-        }
-    ]
-}
-EOF
+#read -r -p "请输入部署K8S的IP段 ，例: 192.168.228.0/24 :" IP_segment
+#
+#cat > $scripts_PATH/package/k8s/server-csr.json << EOF
+#{
+#    "CN": "kubernetes",
+#    "hosts": [
+#      "10.0.0.1",
+#      "127.0.0.1",
+#      "$IP_segment",
+#      "kubernetes",
+#      "kubernetes.default",
+#      "kubernetes.default.svc",
+#      "kubernetes.default.svc.cluster",
+#      "kubernetes.default.svc.cluster.local"
+#    ],
+#    "key": {
+#        "algo": "rsa",
+#        "size": 2048
+#    },
+#    "names": [
+#        {
+#            "C": "CN",
+#            "L": "BeiJing",
+#            "ST": "BeiJing",
+#            "O": "k8s",
+#            "OU": "System"
+#        }
+#    ]
+#}
+#EOF
 
 
 cat > $scripts_PATH/package/k8s/kube-proxy-csr.json << EOF
@@ -415,25 +450,20 @@ NIC_version
 read -r -p "请输入部署Keepalived的VIP，例如：192.168.228.250 : " KVip
 sed -i "s/^Vip:.*/Vip: "${KVip}"/" ${scripts_PATH}/nginx_keepalived/vars/main.yml
 
+
 cd $scripts_PATH
 ansible-playbook -i ${scripts_PATH}/nginx_hosts nginx_keepalived.yaml 
 if [ $? -eq 0 ];then
 sleep 10
 curl -k https://"$KVip":64435/version
 fi
-fi
-
-
-read -r -p "确认是否部署k8s node? [Y/n]:" input_confirm
-if [[ $input_confirm =~ $YES_REGULAR ]]; then
-echo "部署 k8s node"
 
 scp $scripts_PATH/package/k8s/ca.pem $scripts_PATH/k8s_node/files/
-
 
 cd $scripts_PATH/k8s_node/files/
 
 KUBE_APISERVER="https://"$KVip":64435"
+echo $KUBE_APISERVER
 kubectl config set-cluster kubernetes \
   --certificate-authority=./ca.pem \
   --embed-certs=true \
@@ -474,6 +504,12 @@ kubectl config set-context default \
   --user=kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+
+fi
+echo ${KUBE_APISERVER}
+read -r -p "确认是否部署k8s node? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 k8s node"
 
 
 cd $scripts_PATH

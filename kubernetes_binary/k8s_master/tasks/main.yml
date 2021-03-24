@@ -55,7 +55,7 @@
 #  copy: src=server.pem dest="{{K8s_path}}/ssl"
 #
 - name: 推送token文件
-  copy: src=token.csv dest="{{K8s_path}}/cfg"
+  template: src=token.csv.j2 dest="{{K8s_path}}/cfg/token.csv"
 
 - name: 推送kube-apiserver配置文件
   template: src=kube-apiserver.conf.j2 dest="{{K8s_path}}/cfg/kube-apiserver.conf"
