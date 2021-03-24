@@ -40,7 +40,7 @@
    name: ['vim','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','yum-utils','device-mapper-persistent-data','lvm2'] 
    state: latest 
    update_cache: yes
-  ignore_errors: Ture
+  ignore_errors: True
    
 - name: 配置系统内核
   lineinfile:
