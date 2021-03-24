@@ -1,0 +1,10 @@
+KUBELET_OPTS="--logtostderr=false \
+--v=2 \
+--log-dir={{K8s_path}}/logs \
+--hostname-override={{ansible_hostname}} \
+--network-plugin=cni \
+--kubeconfig={{K8s_path}}/cfg/kubelet.kubeconfig \
+--bootstrap-kubeconfig={{K8s_path}}/cfg/bootstrap.kubeconfig \
+--config={{K8s_path}}/cfg/kubelet-config.yml \
+--cert-dir={{K8s_path}}/ssl \
+--pod-infra-container-image=k8s.gcr.io/pause-amd64:3.1"

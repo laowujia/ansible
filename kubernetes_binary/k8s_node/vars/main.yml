@@ -1,0 +1,3 @@
+---
+# vars file for k8s_node
+K8s_path: /opt/kubernetes

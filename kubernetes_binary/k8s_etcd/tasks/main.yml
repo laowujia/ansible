@@ -1,0 +1,62 @@
+---
+# tasks file for k8s_etcd
+#
+- name: 创建etcd安装目录
+  file: path="{{Etcd_path}}" state=directory
+
+- name: 创建etcd 二进制文件存放目录
+  file: path="{{Etcd_path}}/bin" state=directory
+
+- name: 创建etcd 配置文件存放目录
+  file: path="{{Etcd_path}}/cfg" state=directory
+
+- name: 创建etcd 配置文件存放目录
+  file: path="{{Etcd_path}}/ssl" state=directory
+
+- name: 推送 etcd 二进制文件
+  unarchive: src="etcd-v{{Etcd_version}}-linux-amd64.tar.gz" dest=/opt/
+
+- name: 移动 etcd文件
+  shell: |
+      cd {{Etcd_path}}/bin
+      if [ ! -f etcd ];then
+      cd /opt/etcd-v{{Etcd_version}}-linux-amd64/
+      mv etcd etcdctl {{Etcd_path}}/bin/
+      fi
+
+#- name: 移动 etcdctl文件
+#  shell: mv "/opt/etcd-v{{Etcd_version}}-linux-amd64/etcdctl" "{{Etcd_path}}/bin"
+
+- name: 推送etcd配置文件
+  template: src=etcd.conf.j2 dest="{{Etcd_path}}/cfg/etcd.conf"
+
+- name: 推送etcd service 文件
+  template: src=etcd.service.j2 dest=/usr/lib/systemd/system/etcd.service
+
+#- name: 推送etcd证书文件
+#  copy:
+#    src: "{{ item }}"
+#    dest: "{{Etcd_path}}/ssl"
+#  with_fileglob:
+#    - ca-key.pem
+#    - ca.pem
+#    - server-key.pem
+#    - server.pem
+
+- name: 推送etcd 证书文件ca-key.pem
+  copy: src=ca-key.pem dest="{{Etcd_path}}/ssl"
+
+- name: 推送etcd 证书文件ca.pem
+  copy: src=ca.pem dest="{{Etcd_path}}/ssl"
+
+- name: 推送etcd 证书文件server-key.pem
+  copy: src=server-key.pem dest="{{Etcd_path}}/ssl"
+
+- name: 推送etcd 证书文件server.pem
+  copy: src=server.pem dest="{{Etcd_path}}/ssl"
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+- name: start etcd
+  systemd: name=etcd enabled=yes state=started

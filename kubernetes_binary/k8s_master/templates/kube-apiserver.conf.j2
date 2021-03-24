@@ -1,0 +1,27 @@
+KUBE_APISERVER_OPTS="--logtostderr=false \
+--v=2 \
+--log-dir={{K8s_path}}/logs \
+--etcd-servers=https://{{K8s_master01}}:2379,https://{{K8s_master02}}:2379,https://{{K8s_master02}}:2379 \
+--bind-address={{IP}} \
+--secure-port=6443 \
+--advertise-address={{IP}} \
+--allow-privileged=true \
+--service-cluster-ip-range=10.0.0.0/24 \
+--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,NodeRestriction \
+--authorization-mode=RBAC,Node \
+--enable-bootstrap-token-auth=true \
+--token-auth-file={{K8s_path}}/cfg/token.csv \
+--service-node-port-range=30000-32767 \
+--kubelet-client-certificate={{K8s_path}}/ssl/server.pem \
+--kubelet-client-key={{K8s_path}}/ssl/server-key.pem \
+--tls-cert-file={{K8s_path}}/ssl/server.pem  \
+--tls-private-key-file={{K8s_path}}/ssl/server-key.pem \
+--client-ca-file={{K8s_path}}/ssl/ca.pem \
+--service-account-key-file={{K8s_path}}/ssl/ca-key.pem \
+--etcd-cafile={{Etcd_path}}/ssl/ca.pem \
+--etcd-certfile={{Etcd_path}}/ssl/server.pem \
+--etcd-keyfile={{Etcd_path}}/ssl/server-key.pem \
+--audit-log-maxage=30 \
+--audit-log-maxbackup=3 \
+--audit-log-maxsize=100 \
+--audit-log-path={{K8s_path}}/logs/k8s-audit.log"

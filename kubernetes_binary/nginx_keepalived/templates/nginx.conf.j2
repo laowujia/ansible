@@ -1,0 +1,54 @@
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+# 四层负载均衡，为两台Master apiserver组件提供负载均衡
+stream {
+
+    log_format  main  '$remote_addr $upstream_addr - [$time_local] $status $upstream_bytes_sent';
+
+    access_log  /var/log/nginx/k8s-access.log  main;
+
+    upstream k8s-apiserver {
+       server {{K8s_master01}}:6443;   # Master01 APISERVER IP:PORT
+       server {{K8s_master02}}:6443;   # Master02 APISERVER IP:PORT
+       server {{K8s_master03}}:6443;   # Master03 APISERVER IP:PORT
+    }
+    
+    server {
+       listen 64435;
+       proxy_pass k8s-apiserver;
+    }
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    server {
+        listen       80 default_server;
+        server_name  _;
+
+        location / {
+        }
+    }
+}

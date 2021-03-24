@@ -1,0 +1,9 @@
+---
+# vars file for k8s_etcd
+Etcd_version: 3.4.13
+Etcd_path: /opt/etcd
+K8s_master01: 192.168.228.200
+K8s_master02: 192.168.228.201
+K8s_master03: 192.168.228.202
+IP: "{{ansible_all_ipv4_addresses[0]}}"
+Hostname: "{{ansible_hostname}}"

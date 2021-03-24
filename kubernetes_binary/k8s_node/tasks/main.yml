@@ -1,0 +1,57 @@
+---
+# tasks file for k8s_node
+- name: 创建k8s 部署二进制目录
+  file: path="{{K8s_path}}/bin" state=directory
+
+- name: 创建k8s 部署配置文件目录
+  file: path="{{K8s_path}}/cfg" state=directory
+
+- name: 创建k8s 部署证书目录
+  file: path="{{K8s_path}}/ssl" state=directory
+
+- name: 创建k8s 部署日志目录
+  file: path="{{K8s_path}}/logs" state=directory
+
+- name: 推送k8s 二进制文件
+  unarchive: src=kubernetes-server-linux-amd64.tar.gz dest=/tmp/
+
+- name: 复制kubelet二进制文件
+  shell: |
+      cd "{{K8s_path}}/bin"
+      if [ ! -f kubelet ];then
+      cd /tmp/kubernetes/server/bin
+      cp kubelet kube-proxy "{{K8s_path}}/bin"
+      fi
+
+- name: 推送kubelet配置文件（conf）
+  template: src=kubelet.conf.j2 dest="{{K8s_path}}/cfg/kubelet.conf
+
+- name: 推送kubelet配置文件（yml）
+  template: src=kubelet-config.yml.j2 dest="{{K8s_path}}/cfg/kubelet-config.yml
+
+- name: 推送bootstrap.kubeconfig 文件
+  copy: src=bootstrap.kubeconfig dest="{{K8s_path}}/cfg/"
+
+- name: 推送kubelet.service启动文件
+  template: src=kubelet.service.j2 dest=/usr/lib/systemd/system/kubelet.service
+
+- name: 推送kube-proxy配置文件
+  template: src=kube-proxy.conf.j2 dest="{{K8s_path}}/cfg/kube-proxy.conf"
+
+- name: 推送kube-proxy配置文件(yml)
+  template: src=kube-proxy-config.yml.j2 dest="{{K8s_path}}/cfg/kube-proxy-config.yml"
+
+- name: 推送kube-proxy.kubeconfig 文件
+  copy: src=kube-proxy.kubeconfig dest="{{K8s_path}}/cfg/"
+
+- name: 推送kube-proxy.service启动文件
+  template: src=kube-proxy.service.j2 dest=/usr/lib/systemd/system/kube-proxy.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+- name: start kubelet
+  systemd: name=kubelet enabled=yes state=started
+
+- name: start kube-proxy
+  systemd: name=kube-proxy enabled=yes state=started

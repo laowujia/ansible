@@ -1,0 +1,4 @@
+- hosts: Keepalived
+  remote_user: root
+  roles:
+   - nginx_keepalived

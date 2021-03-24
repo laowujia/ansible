@@ -1,0 +1,10 @@
+[k8s_master]
+192.168.228.200 hostname=k8s-master01
+192.168.228.201 hostname=k8s-master02
+192.168.228.202 hostname=k8s-master03
+[k8s_node]
+192.168.228.203 hostname=k8s-node01
+192.168.228.204 hostname=k8s-node02
+192.168.228.205 hostname=k8s-node03
+192.168.228.206 hostname=k8s-node04
+192.168.228.207 hostname=k8s-node05

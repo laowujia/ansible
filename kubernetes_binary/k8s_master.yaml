@@ -1,0 +1,4 @@
+- hosts: k8s_master
+  remote_user: root
+  roles:
+   - k8s_master

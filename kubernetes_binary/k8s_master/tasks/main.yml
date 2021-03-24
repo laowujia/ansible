@@ -1,0 +1,88 @@
+---
+# tasks file for k8s_master
+#
+- name: 创建k8s 部署二进制目录
+  file: path="{{K8s_path}}/bin" state=directory
+
+- name: 创建k8s 部署配置文件目录
+  file: path="{{K8s_path}}/cfg" state=directory
+
+- name: 创建k8s 部署证书目录
+  file: path="{{K8s_path}}/ssl" state=directory
+
+- name: 创建k8s 部署日志目录
+  file: path="{{K8s_path}}/logs" state=directory
+
+- name: 推送k8s 二进制文件
+  unarchive: src=kubernetes-server-linux-amd64.tar.gz dest=/tmp/
+
+- name: 复制kube-apiserver二进制文件
+  shell: |
+      cd "{{K8s_path}}/bin"
+      if [ ! -f kube-apiserver ];then
+      cd /tmp/kubernetes/server/bin
+      cp kube-apiserver kube-scheduler kube-controller-manager "{{K8s_path}}/bin"
+      fi
+
+- name: 添加kubectl二进制文件到系统命令中
+  shell: |
+      cd /usr/bin/
+      if [ ! -f kubectl ];then
+      cd /tmp/kubernetes/server/bin
+      cp kubectl /usr/bin/
+      fi
+
+- name: 推送k8s证书文件
+  copy:
+    src: "{{ item }}"
+    dest: "{{K8s_path}}/ssl"
+  with_fileglob:
+    - ca-key.pem
+    - ca.pem
+    - server-key.pem
+    - server.pem
+
+#- name: 推送k8s 证书文件ca-key.pem
+#  copy: src=ca-key.pem dest="{{K8s_path}}/ssl"
+#
+#- name: 推送k8s 证书文件ca.pem
+#  copy: src=ca.pem dest="{{K8s_path}}/ssl"
+#
+#- name: 推送k8s 证书文件server-key.pem
+#  copy: src=server-key.pem dest="{{K8s_path}}/ssl"
+#
+#- name: 推送k8s 证书文件server.pem
+#  copy: src=server.pem dest="{{K8s_path}}/ssl"
+#
+- name: 推送token文件
+  copy: src=token.csv dest="{{K8s_path}}/cfg"
+
+- name: 推送kube-apiserver配置文件
+  template: src=kube-apiserver.conf.j2 dest="{{K8s_path}}/cfg/kube-apiserver.conf"
+
+- name: 推送kube-apiserver启动文件
+  template: src=kube-apiserver.service.j2 dest=/usr/lib/systemd/system/kube-apiserver.service
+
+- name: 推送kube-controller-manager配置文件
+  template: src=kube-controller-manager.conf.j2 dest="{{K8s_path}}/cfg/kube-controller-manager.conf"
+
+- name: 推送kube-controller-manager启动文件
+  template: src=kube-controller-manager.service.j2 dest=/usr/lib/systemd/system/kube-controller-manager.service
+
+- name: 推送kube-scheduler配置文件
+  template: src=kube-scheduler.conf.j2 dest="{{K8s_path}}/cfg/kube-scheduler.conf"
+
+- name: 推送kube-scheduler启动文件
+  template: src=kube-scheduler.service.j2 dest=/usr/lib/systemd/system/kube-scheduler.service
+
+- name: just force systemd to reread
+  systemd: daemon_reload=yes
+
+- name: start kube-apiserver
+  systemd: name=kube-apiserver enabled=yes state=started
+
+- name: start kube-controller-manager
+  systemd: name=kube-controller-manager enabled=yes state=started
+
+- name: start kube-controller-manager
+  systemd: name=kube-scheduler enabled=yes state=started

@@ -1,0 +1,4 @@
+- hosts: etcd
+  remote_user: root
+  roles:
+   - k8s_etcd
