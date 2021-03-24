@@ -32,6 +32,9 @@
 - name: 推送bootstrap.kubeconfig 文件
   copy: src=bootstrap.kubeconfig dest="{{K8s_path}}/cfg/"
 
+- name: 推送ca.pem 文件
+  copy: src=ca.pem dest="{{K8s_path}}/ssl/"
+
 - name: 推送kubelet.service启动文件
   template: src=kubelet.service.j2 dest=/usr/lib/systemd/system/kubelet.service
 
