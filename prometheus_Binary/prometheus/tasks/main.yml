@@ -1,0 +1,97 @@
+---
+# tasks file for prometheus_Binaray
+
+- name: docker 启动 consul 
+  shell: docker run --name consul -d -p 8500:8500 consul
+  when: ansible_default_ipv4.address == "{{Consul_IP}}"
+  ignore_errors: yes
+
+- name: 创建安装存放的目录
+  file: path="{{Monitor_dir}}" state=directory
+
+- name: 推送alertmanager二进制文件
+  unarchive: src=alertmanager-0.21.0.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 重命名alertmanager
+  shell: |
+       cd "{{Monitor_dir}}"
+       if [ ! -d alertmanager ];then
+           mv alertmanager-0.21.0.linux-amd64 alertmanager
+       fi
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送alertmanager配置文件
+  template: src=alertmanager.yml.j2 dest="{{Monitor_dir}}/alertmanager/alertmanager.yml"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送alertmanager systemd 文件
+  template: src=alertmanager.service.j2 dest=/usr/lib/systemd/system/alertmanager.service
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 启动alertmanager服务
+  systemd: name=alertmanager state=started enabled=yes daemon_reload=yes
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送prometheus 二进制文件
+  unarchive: src=prometheus-2.22.1.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 重命名prometheus
+  shell: |
+       cd "{{Monitor_dir}}"
+       if [ ! -d prometheus ];then
+           mv prometheus-2.22.1.linux-amd64 prometheus
+       fi
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 创建告警规则存放的目录
+  file: path="{{Monitor_dir}}/prometheus/rules" state=directory
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送告警规则文件
+  copy: src=Alarm_rules.yml dest="{{Monitor_dir}}/prometheus/rules"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送node_exporter告警规则文件
+  copy: src=node_exporter.yml dest="{{Monitor_dir}}/prometheus/rules"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送prometheus配置文件
+  template: src=prometheus.yml.j2 dest="{{Monitor_dir}}/prometheus/prometheus.yml"
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送prometheus 服务文件
+  template: src=prometheus.service.j2 dest=/usr/lib/systemd/system/prometheus.service
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 启动prometheus 服务
+  systemd: name=prometheus state=started enabled=yes daemon_reload=yes
+  when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
+
+- name: 推送node_exporter 二进制文件
+  unarchive: src=node_exporter-1.0.1.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+ 
+- name: 重命名 node_exporter
+  shell: |
+      cd "{{Monitor_dir}}"
+      if [ ! -d node_exporter ];then
+          mv node_exporter-1.0.1.linux-amd64 node_exporter
+      fi
+
+- name: 推送node_exporter配置文件
+  template: src=node_exporter_config.yml.j2 dest="{{Monitor_dir}}/node_exporter/config.yml"
+
+- name: 复制node_exporter systemd文件
+  template: src=node_exporter.service.j2 dest=/usr/lib/systemd/system/node_exporter.service
+
+- name: 启动node_exporter服务
+  systemd: name=node_exporter state=started enabled=yes daemon_reload=yes
+
+- name: 推送注册脚本
+  copy: src=consul-register.sh dest="{{Monitor_dir}}/consul-register.sh" mode=0755 force=yes
+
+- name: 注册当前节点
+  #服务名 实例名 IP 端口
+  shell: /bin/bash "{{Monitor_dir}}/consul-register.sh" {{ group_names[0] }} "{{ansible_hostname}}" {{ inventory_hostname }} 9100
+

@@ -51,8 +51,8 @@ echo "[k8s_master]
 function cni_Version () {
 if [[ -z "$Cni_version" || "$Cni_version" =~ "0.8.7" ]];then
 Cni_version=0.8.7
-#rm -f $scripts_PATH/package/cni-*
-#wget -P $scripts_PATH/package  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
+rm -f $scripts_PATH/package/cni-*
+wget -P $scripts_PATH/package  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
 sed -i "s/^Cni_version:.*/Cni_version: ${Cni_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 rm -f $scripts_PATH/package/cni-*
@@ -85,12 +85,12 @@ system_init
 fi
 
 #######################安装证书管理工具cfssl #########################
-cd $scripts_PATH/package
+#cd $scripts_PATH/package
 #wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64  && wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 && wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64
-if [ -f $scripts_PATH/package/cfssl_linux-amd64 ] ;then
-chmod +x cfssl_linux-amd64 cfssljson_linux-amd64 cfssl-certinfo_linux-amd64
-mv cfssl_linux-amd64 /usr/local/bin/cfssl   && mv cfssljson_linux-amd64 /usr/local/bin/cfssljson && mv cfssl-certinfo_linux-amd64 /usr/bin/cfssl-certinfo
-fi
+#if [ -f $scripts_PATH/package/cfssl_linux-amd64 ] ;then
+#chmod +x cfssl_linux-amd64 cfssljson_linux-amd64 cfssl-certinfo_linux-amd64
+#mv cfssl_linux-amd64 /usr/local/bin/cfssl   && mv cfssljson_linux-amd64 /usr/local/bin/cfssljson && mv cfssl-certinfo_linux-amd64 /usr/bin/cfssl-certinfo
+#fi
 
 
 ################################ETCD##########################
@@ -98,8 +98,8 @@ fi
 function etcd_Version () {
 if [[ -z "$Etcd_version" || "$Etcd_version" =~ "3.4.13" ]];then
 Etcd_version=3.4.13
-#rm -f $scripts_PATH/package/etcd*
-#wget -P $scripts_PATH/package  https://github.com/etcd-io/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
+rm -f $scripts_PATH/package/etcd*
+wget -P $scripts_PATH/package  https://github.com/etcd-io/etcd/releases/download/v3.4.13/etcd-v3.4.13-linux-amd64.tar.gz
 sed -i "s/^Etcd_version:.*/Etcd_version: ${Etcd_version}/" ${scripts_PATH}/k8s_etcd/vars/main.yml
 else
 rm -f $scripts_PATH/package/etcd*
@@ -239,8 +239,8 @@ K8s_version=1.19.1
 #rm -f $scripts_PATH/package/kubernetes-*
 #wget -P $scripts_PATH/package  wget https://dl.k8s.io/v1.19.1/kubernetes-server-linux-amd64.tar.gz
 else
-#rm -f $scripts_PATH/package/kubernetes-*
-#wget -P $scripts_PATH/package  wget https://dl.k8s.io/v"$K8s_version"/kubernetes-server-linux-amd64.tar.gz
+rm -f $scripts_PATH/package/kubernetes-*
+wget -P $scripts_PATH/package  wget https://dl.k8s.io/v"$K8s_version"/kubernetes-server-linux-amd64.tar.gz
 echo 1
 fi
 scp  $scripts_PATH/package/kubernetes-* ${scripts_PATH}/k8s_master/files/
@@ -306,7 +306,7 @@ cd $scripts_PATH/package/k8s/
 fi
 
 rm -f $scripts_PATH/package/k8s/server-csr.json
-read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个回车，输入完毕后回车,例: 192.168.228.208 :" IP
+read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个IP,然后回车，输入完毕后回车,例: 192.168.228.208 :" IP
 i=1
 echo "{" >>$scripts_PATH/package/k8s/server-csr.json
 echo "    \"CN\": \"kubernetes\"," >>$scripts_PATH/package/k8s/server-csr.json
@@ -316,7 +316,7 @@ echo "      \"127.0.0.1\"," >>$scripts_PATH/package/k8s/server-csr.json
 while [ -n "$IP" ]
 do
 echo "      \"${IP}\"," >>$scripts_PATH/package/k8s/server-csr.json
-read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个回车,输入完毕后回车,例: 192.168.228.208 :" IP
+read -r -p "请输入所有Master/LB/VIP IP，一个都不能少！为了方便后期扩容可以多写几个预留的IP,一次输入一个IP,然后回车,输入完毕后回车,例: 192.168.228.208 :" IP
 ((i++))
 done
 echo "      \"kubernetes\"," >>$scripts_PATH/package/k8s/server-csr.json
@@ -416,6 +416,7 @@ kubectl create clusterrolebinding kubelet-bootstrap \
 #查看集群状态
 kubectl get cs
 
+
 fi
 
 
@@ -465,7 +466,7 @@ cd $scripts_PATH/k8s_node/files/
 KUBE_APISERVER="https://"$KVip":64435"
 echo $KUBE_APISERVER
 kubectl config set-cluster kubernetes \
-  --certificate-authority=./ca.pem \
+  --certificate-authority=/opt/kubernetes/ssl/ca.pem \
   --embed-certs=true \
   --server=${KUBE_APISERVER} \
   --kubeconfig=bootstrap.kubeconfig
@@ -519,4 +520,11 @@ ansible-playbook -i ${scripts_PATH}/hosts k8s_node.yaml
 for i in `kubectl get csr|grep Pending|awk '{print $1}'`;do
 kubectl certificate approve $i
 done
+fi
+read -r -p "确认是否部署k8s 完成? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "结束收尾"
+#/usr/bin/kubectl apply -f ${scripts_PATH}/package/kube-flannel.yml
+/usr/bin/kubectl apply -f ${scripts_PATH}/package/apiserver-to-kubelet-rbac.yaml
+/usr/bin/kubectl apply -f ${scripts_PATH}/package/coredns.yaml
 fi

@@ -1,0 +1,11 @@
+[Unit]
+Description=node_exporter
+
+[Service]
+ExecStart={{Monitor_dir}}/node_exporter/node_exporter --web.config={{Monitor_dir}}/node_exporter/config.yml
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

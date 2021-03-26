@@ -1,7 +1,7 @@
 KUBE_APISERVER_OPTS="--logtostderr=false \
 --v=2 \
 --log-dir={{K8s_path}}/logs \
---etcd-servers=https://{{K8s_master01}}:2379,https://{{K8s_master02}}:2379,https://{{K8s_master02}}:2379 \
+--etcd-servers=https://{{K8s_master01}}:2379,https://{{K8s_master02}}:2379,https://{{K8s_master03}}:2379 \
 --bind-address={{IP}} \
 --secure-port=6443 \
 --advertise-address={{IP}} \

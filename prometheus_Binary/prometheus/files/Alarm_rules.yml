@@ -1,0 +1,12 @@
+groups:
+- name: example #告警规则组名称，这个名称跟alertmanager.yml 中的group_by是一样的
+  rules:
+# 任何实例5分钟内无法访问发出告警
+  - alert: InstanceDown # 告警规则名称
+    expr: up == 0 # 基于PromQL的触发条件
+    for: 5m # 等待评估时间，相当于5分钟之内还是UP==0 ，就会触发告警，如果不设置这个值，就会立即进行下一步，
+    labels: # 自定义标签
+      severity: page
+    annotations: # 指定附加信息
+      summary: " {{ $labels.instance }} 停止工作"
+      description: "{{ $labels.instance }}：job {{ $labels.job }} 已经停止5分钟以上."

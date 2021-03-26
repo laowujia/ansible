@@ -1,8 +1,0 @@
----
-# vars file for prometheus_Binary
-Prometheus_IP: 192.168.228.200     #安装prometheus的服务器IP
-Consul_IP: 192.168.228.200         #安装consul的服务器IP
-Monitor_dir: /opt/monitor          #安装软件存放的目录
-Group_name1: master                #在ansible inventory 中设置的分组
-Group_name2: node                  #在ansible inventory 中设置的分组,依次类推
-
