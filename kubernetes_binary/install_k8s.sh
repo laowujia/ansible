@@ -396,7 +396,7 @@ EOF
 
 
 
-TOKEN=`head -c 16 /dev/urandom | od -An -t x | tr -d ' '`
+TOKEN="87f2fc3ccad8123f2deee204131e1d99"
 sed -i "s/^Token:.*/Token: ${TOKEN}/" ${scripts_PATH}/k8s_master/vars/main.yml
 
 if [ ! -f  $scripts_PATH/package/k8s/server-key.pem ];then
