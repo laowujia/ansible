@@ -6,4 +6,4 @@ K8s_master01: 192.168.228.200
 K8s_master02: 192.168.228.201
 K8s_master03: 192.168.228.202
 IP: "{{ansible_all_ipv4_addresses[0]}}"
-Token: 17dfa29c210a0165eb58c6ec022d93e1
+Token: 87f2fc3ccad8123f2deee204131e1d99

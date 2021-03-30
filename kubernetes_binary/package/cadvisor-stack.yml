@@ -1,0 +1,26 @@
+version: "3.5"
+services:
+  cadvisor:
+    image: google/cadvisor:latest
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8080:8080
+ #   networks:
+ #     - agent_network
+    command: -logtostderr -docker_only
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+  
+#networks:
+#  agent_network:
+#    driver: overlay
+#    attachable: true

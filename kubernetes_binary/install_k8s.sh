@@ -51,8 +51,8 @@ echo "[k8s_master]
 function cni_Version () {
 if [[ -z "$Cni_version" || "$Cni_version" =~ "0.8.7" ]];then
 Cni_version=0.8.7
-rm -f $scripts_PATH/package/cni-*
-wget -P $scripts_PATH/package  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
+#rm -f $scripts_PATH/package/cni-*
+#wget -P $scripts_PATH/package  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz
 sed -i "s/^Cni_version:.*/Cni_version: ${Cni_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 rm -f $scripts_PATH/package/cni-*
@@ -87,10 +87,10 @@ fi
 #######################安装证书管理工具cfssl #########################
 #cd $scripts_PATH/package
 #wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64  && wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 && wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64
-#if [ -f $scripts_PATH/package/cfssl_linux-amd64 ] ;then
-#chmod +x cfssl_linux-amd64 cfssljson_linux-amd64 cfssl-certinfo_linux-amd64
-#mv cfssl_linux-amd64 /usr/local/bin/cfssl   && mv cfssljson_linux-amd64 /usr/local/bin/cfssljson && mv cfssl-certinfo_linux-amd64 /usr/bin/cfssl-certinfo
-#fi
+if [ -f $scripts_PATH/package/cfssl_linux-amd64 ] ;then
+chmod +x cfssl_linux-amd64 cfssljson_linux-amd64 cfssl-certinfo_linux-amd64
+mv cfssl_linux-amd64 /usr/local/bin/cfssl   && mv cfssljson_linux-amd64 /usr/local/bin/cfssljson && mv cfssl-certinfo_linux-amd64 /usr/bin/cfssl-certinfo
+fi
 
 
 ################################ETCD##########################
@@ -524,7 +524,7 @@ fi
 read -r -p "确认是否部署k8s 完成? [Y/n]:" input_confirm
 if [[ $input_confirm =~ $YES_REGULAR ]]; then
 echo "结束收尾"
-#/usr/bin/kubectl apply -f ${scripts_PATH}/package/kube-flannel.yml
+/usr/bin/kubectl apply -f ${scripts_PATH}/package/kube-flannel.yml
 /usr/bin/kubectl apply -f ${scripts_PATH}/package/apiserver-to-kubelet-rbac.yaml
 /usr/bin/kubectl apply -f ${scripts_PATH}/package/coredns.yaml
 fi
