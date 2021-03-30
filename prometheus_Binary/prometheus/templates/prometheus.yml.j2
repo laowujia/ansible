@@ -28,21 +28,12 @@ scrape_configs:
     static_configs:
     - targets: ['localhost:9090']
 
-  - job_name: '{{Group_name1}}'
+  - job_name: 'node'
     basic_auth:
       username: prometheus
       password: admin
     consul_sd_configs:
     - server: {{Consul_IP}}:8500
-      services: [{{Group_name1}}]
-
-  - job_name: '{{Group_name2}}'
-    basic_auth:
-      username: prometheus
-      password: admin
-    consul_sd_configs:
-    - server: {{Consul_IP}}:8500
-      services: [{{Group_name2}}]
 
   - job_name: 'mysql'
     static_configs:

@@ -10,14 +10,14 @@
   file: path="{{Monitor_dir}}" state=directory
 
 - name: 推送alertmanager二进制文件
-  unarchive: src=alertmanager-0.21.0.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+  unarchive: src="alertmanager-{{Alertmanager_version}}.linux-amd64.tar.gz" dest="{{Monitor_dir}}"
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
 - name: 重命名alertmanager
   shell: |
        cd "{{Monitor_dir}}"
        if [ ! -d alertmanager ];then
-           mv alertmanager-0.21.0.linux-amd64 alertmanager
+           mv "alertmanager-{{Alertmanager_version}}.linux-amd64" alertmanager
        fi
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
@@ -34,14 +34,14 @@
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
 - name: 推送prometheus 二进制文件
-  unarchive: src=prometheus-2.22.1.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+  unarchive: src="prometheus-{{Prometheus_verison}}.linux-amd64.tar.gz" dest="{{Monitor_dir}}"
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
 - name: 重命名prometheus
   shell: |
        cd "{{Monitor_dir}}"
        if [ ! -d prometheus ];then
-           mv prometheus-2.22.1.linux-amd64 prometheus
+           mv "prometheus-{{Prometheus_verison}}.linux-amd64" prometheus
        fi
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
@@ -70,13 +70,13 @@
   when: ansible_default_ipv4.address == "{{Prometheus_IP}}"
 
 - name: 推送node_exporter 二进制文件
-  unarchive: src=node_exporter-1.0.1.linux-amd64.tar.gz dest="{{Monitor_dir}}"
+  unarchive: src="node_exporter-{{Node_exporter_version}}.linux-amd64.tar.gz" dest="{{Monitor_dir}}"
  
 - name: 重命名 node_exporter
   shell: |
       cd "{{Monitor_dir}}"
       if [ ! -d node_exporter ];then
-          mv node_exporter-1.0.1.linux-amd64 node_exporter
+          mv "node_exporter-{{Node_exporter_version}}.linux-amd64" node_exporter
       fi
 
 - name: 推送node_exporter配置文件
