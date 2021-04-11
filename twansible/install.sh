@@ -89,14 +89,14 @@ fi
 done
 }
 
-read -r -p "确认是否做root免密登录? [Y/n]:" input_confirm
-if [[ $input_confirm =~ $YES_REGULAR ]]; then
-echo "进行root免密登录配置"
-
-read -r -p "确认是服务器的root是否相同？默认为root密码相同，输入1为密码相同，输入2为密码不同 ：" passwd_diif
-if [[ -z "$passwd_diif" || "$passwd_diif" == "1" ]];then 
-Alike_password
-elif [[ "$passwd_diif" == "2" ]];then
+#read -r -p "确认是否做root免密登录? [Y/n]:" input_confirm
+#if [[ $input_confirm =~ $YES_REGULAR ]]; then
+#echo "进行root免密登录配置"
+#
+#read -r -p "确认是服务器的root是否相同？默认为root密码相同，输入1为密码相同，输入2为密码不同 ：" passwd_diif
+#if [[ -z "$passwd_diif" || "$passwd_diif" == "1" ]];then 
+#Alike_password
+#elif [[ "$passwd_diif" == "2" ]];then
 
 
 
