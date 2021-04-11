@@ -76,7 +76,7 @@ fi
 
 function Diff_password () {
 read -r -p "请输入服务器的IP和密码，例如：192.168.228.200  root_password " IP ROOT_password
-while 
+while  [ -n "$IP" ]
 do
 echo [password] > ${scripts_PATH}/hosts
 CheckIPAddr $IP
