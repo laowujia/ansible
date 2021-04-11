@@ -574,7 +574,7 @@ sed -i "s/^sync_res:.*/sync_res: false/" ${scripts_PATH}/alone/canal/vars/main.y
 echo "当前同步只有基础平台"
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts canal.yaml
-if [ -eq 0];then
+if [ -eq 0 ];then
 echo  "canal部署完成"
 else
 echo "canal部署失败，请重新部署"
