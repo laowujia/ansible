@@ -1,0 +1,4 @@
+---
+# vars file for kubeadm_sealos
+Kubeadm_version: 1.17.17-0    #部署kubeadm的版本
+Docker_version: 19.03.9       #部署docker版本
