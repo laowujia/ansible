@@ -1,7 +1,12 @@
 {
   "registry-mirrors": ["https://f14bca18c8c246eeb9799d44df15bb70.mirror.swr.myhuaweicloud.com"],
+  "exec-opts": ["native.cgroupdriver=systemd"],
   "log-opts": {
     "max-size": "50m",
     "max-file": "3"
-  }
+  },
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ]
 }

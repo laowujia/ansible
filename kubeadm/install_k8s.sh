@@ -32,7 +32,13 @@ echo "[k8s_master]
 "
 
 echo "环境部署安装初始化"
-grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
+#grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
+IP=`awk '{print $1}' /etc/ansible/hosts/hosts |grep -v "k8s"|head -n 1`
+grep "$IP" /etc/hosts >>/dev/null 2>&1
+if [ $? -ne 0 ];then
+grep "hostname=" ${scripts_PATH}/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
+fi
+
 
 ###添加docker yum 源
 yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
@@ -46,9 +52,9 @@ function docker_Version () {
 if [[ -z "$Docker_version"  ]];then
 sed -i "s/^Docker_version:.*/Docker_version: ${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
-yum list docker-ce --showduplicates | sort -r |grep ${Docker_version}
+yum list docker-ce --showduplicates | sort -r |grep ${Docker_version} > /dev/null
 if [ $? -eq 0 ];then
-sed -i "s/^Docker_version:.*/Docker_version: ${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
+sed -i "s/^Docker_version:.*/Docker_version: -${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 echo "yum源中没有这个版本，请重新输入"
 fi
@@ -59,7 +65,7 @@ function kubeadm_Version () {
 if [[ -z "$Kubeadm_version"  ]];then
 sed -i "s/^Kubeadm_version:.*/Kubeadm_version: ${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
-yum list kubeadm --showduplicates | sort -r |grep ${Kubeadm_version}
+yum list kubeadm --showduplicates | sort -r |grep ${Kubeadm_version} >/dev/null
 if [ $? -eq 0 ];then
 sed -i "s/^Kubeadm_version:.*/Kubeadm_version: ${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
@@ -68,15 +74,15 @@ fi
 fi
 }
 
-read -r -p "请输入k8s 集群docker 版本号，比如:19.03.9 ,默认为最新版本 : " Docker_version
-docker_Version
+#read -r -p "请输入k8s 集群docker 版本号，比如:19.03.9 ,默认为最新版本 : " Docker_version
+#docker_Version
 
-read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
-kubeadm_Version
+#read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
+#kubeadm_Version
 
 
 cd $scripts_PATH
-ansible-playbook k8s_init.yaml
+#ansible-playbook k8s_init.yaml
 
 ansible-playbook k8s_master.yaml
 
