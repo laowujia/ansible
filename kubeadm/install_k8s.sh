@@ -74,15 +74,15 @@ fi
 fi
 }
 
-#read -r -p "请输入k8s 集群docker 版本号，比如:19.03.9 ,默认为最新版本 : " Docker_version
-#docker_Version
+read -r -p "请输入k8s 集群docker 版本号，比如:19.03.9 ,默认为最新版本 : " Docker_version
+docker_Version
 
-#read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
-#kubeadm_Version
+read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
+kubeadm_Version
 
 
 cd $scripts_PATH
-#ansible-playbook k8s_init.yaml
+ansible-playbook k8s_init.yaml
 
 ansible-playbook k8s_master.yaml
 
