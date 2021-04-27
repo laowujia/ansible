@@ -38,8 +38,8 @@ echo -e "3、环境中需要有一台服务器安装docker，用来部署consul"
 function prometheus_Version () {
 if [[ -z "$Prometheus_version" || "$Prometheus_version" =~ "2.22.1" ]];then
 Prometheus_version=2.22.1
-#rm -f $scripts_PATH/package/prometheus-*
-#wget -P $scripts_PATH/package  https://github.com/prometheus/prometheus/releases/download/v2.22.1/prometheus-2.22.1.linux-amd64.tar.gz
+rm -f $scripts_PATH/package/prometheus-*
+wget -P $scripts_PATH/package  https://github.com/prometheus/prometheus/releases/download/v2.22.1/prometheus-2.22.1.linux-amd64.tar.gz
 sed -i "s/^Prometheus_verison:.*/Prometheus_verison: ${Prometheus_version}/" ${scripts_PATH}/prometheus/vars/main.yml
 else
 rm -f $scripts_PATH/package/prometheus-*
@@ -54,8 +54,8 @@ scp  $scripts_PATH/package/prometheus-* ${scripts_PATH}/prometheus/files/
 function alertmanager_Version () {
 if [[ -z "$Alertmanager_version" || "$Alertmanager_version" =~ "0.21.0" ]];then
 Alertmanager_version=0.21.0
-#rm -f $scripts_PATH/package/alertmanager-*
-#wget -P $scripts_PATH/package  https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
+rm -f $scripts_PATH/package/alertmanager-*
+wget -P $scripts_PATH/package  https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
 sed -i "s/^Alertmanager_version:.*/Alertmanager_version: ${Alertmanager_version}/" ${scripts_PATH}/prometheus/vars/main.yml
 else
 rm -f $scripts_PATH/package/alertmanager-*
@@ -68,8 +68,8 @@ scp  $scripts_PATH/package/alertmanager-* ${scripts_PATH}/prometheus/files/
 function node_exporter_Version () {
 if [[ -z "$Node_exporter_version" || "$Node_exporter_version" =~ "1.0.1" ]];then
 Node_exporter_version=0.21.0
-#rm -f $scripts_PATH/package/node_exporter-*
-#wget -P $scripts_PATH/package  https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
+rm -f $scripts_PATH/package/node_exporter-*
+wget -P $scripts_PATH/package  https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
 sed -i "s/^Node_exporter_version:.*/Node_exporter_version: ${Node_exporter_version}/" ${scripts_PATH}/prometheus/vars/main.yml
 else
 rm -f $scripts_PATH/package/node_exporter-*

@@ -1,0 +1,6 @@
+---
+# tasks file for k8s_node
+- name: 复制添加节点脚本
+  copy: src=add_node.sh dest=/root/add_node.sh  mode=0755
+- name: 运行添加节点脚本
+  shell: sh /root/add_node.sh

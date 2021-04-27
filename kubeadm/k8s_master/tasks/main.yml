@@ -1,0 +1,16 @@
+---
+# tasks file for k8s_master
+- name: "初始化master"
+  shell: kubeadm init  --service-cidr=10.96.0.0/12 --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=Swap --image-repository registry.aliyuncs.com/google_containers
+
+- name: "执行脚本添加节点"
+  shell: kubeadm token create --print-join-command > /root/add_node.sh
+
+- name: "创建配置文件"
+  shell: mkdir -p $HOME/.kube
+- name: "配置文件2"
+  shell: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+- name: "配置文件3"
+  shell: chown $(id -u):$(id -g) $HOME/.kube/config
+- name: "添加flannel网络组件"
+  shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml

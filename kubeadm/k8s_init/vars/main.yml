@@ -1,0 +1,5 @@
+---
+# vars file for k8s_init
+#
+Docker_verison:
+Kubeadm_version:
