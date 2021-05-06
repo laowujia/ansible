@@ -14,7 +14,34 @@ fi
 fi
 }
 
+
+##############检查IP 合法性##############
+function CheckIPAddr () {
+echo $1 |grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null;
+if [ $? -ne 0 ]
+then
+        return 1
+fi
+ipaddr=$1
+a=`echo $ipaddr|awk -F . '{print $1}'`
+b=`echo $ipaddr|awk -F . '{print $2}'`
+c=`echo $ipaddr|awk -F . '{print $3}'`
+d=`echo $ipaddr|awk -F . '{print $4}'`
+for num in $a $b $c $d
+do
+  if [ $num -gt 255 ] || [ $num -lt 0 ]
+  then
+     return 1
+    fi
+done
+   return 0
+}
+
+
 Checkansible
+
+
+
 
 echo -e "以下为安装前提说明，请确认是否满足条件"
 echo -e "1、安装环境centos7,部署方式为kubeadm"
@@ -33,7 +60,7 @@ echo "[k8s_master]
 
 echo "环境部署安装初始化"
 #grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
-IP=`awk '{print $1}' /etc/ansible/hosts/hosts |grep -v "k8s"|head -n 1`
+IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "k8s"|head -n 1`
 grep "$IP" /etc/hosts >>/dev/null 2>&1
 if [ $? -ne 0 ];then
 grep "hostname=" ${scripts_PATH}/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
@@ -80,14 +107,24 @@ docker_Version
 read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
 kubeadm_Version
 
+read -r -p "请输入k8s 集群kubeadm初始化的第一个master服务器 IP : " Master_IP
+CheckIPAddr $Master_IP
+if [ $? -eq 0 ];then
+cat > ${scripts_PATH}/k8s_master_hosts << EOF
+[k8s_master]
+$Master_IP
+EOF
+else
+echo "输入 $Master_IP IP 不合法"
+fi
 
 cd $scripts_PATH
 ansible-playbook k8s_init.yaml
 
-ansible-playbook k8s_master.yaml
+#ansible-playbook k8s_master.yaml
 
-Ansible_IP=`sed -n '/k8s_master/{n;p;}' /etc/ansible/hosts |awk '{print $1}'`
+#Ansible_IP=`sed -n '/k8s_master/{n;p;}' /etc/ansible/hosts |awk '{print $1}'`
 
-scp $Ansible_IP:/root/add_node.sh  $scripts_PATH/k8s_node/files/
+#scp $Ansible_IP:/root/add_node.sh  $scripts_PATH/k8s_node/files/
 
-ansible-playbook k8s_node.yaml
+#ansible-playbook k8s_node.yaml

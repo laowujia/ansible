@@ -38,7 +38,7 @@
 
 - name: install package
   yum: 
-   name: ['vim','ipvsadm','ipset','sysstat','conntrack','libseccomp','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','yum-utils','device-mapper-persistent-data','lvm2','kubelet-{{Kubeadm_version}}','kubeadm-{{Kubeadm_version}}','kubectl-{{Kubeadm_version}}'] 
+   name: ['psmisc','vim','ipvsadm','ipset','sysstat','conntrack','libseccomp','man','gcc','gcc-c++','wget','tree','dos2unix','ipmitool','lrzsz','iotop','make','openssl-devel','rpm-build','net-snmp','net-snmp-devel','net-snmp-utils','rsync','nfs-utils','rpcbind','pciutils','net-tools','ntp','yum-utils','device-mapper-persistent-data','lvm2','kubelet-{{Kubeadm_version}}','kubeadm-{{Kubeadm_version}}','kubectl-{{Kubeadm_version}}'] 
    state: latest 
    update_cache: yes
 

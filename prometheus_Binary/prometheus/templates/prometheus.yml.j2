@@ -34,6 +34,7 @@ scrape_configs:
       password: admin
     consul_sd_configs:
     - server: {{Consul_IP}}:8500
+      services: ["node"]
 
   - job_name: 'mysql'
     static_configs:
