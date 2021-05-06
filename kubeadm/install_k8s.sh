@@ -63,7 +63,7 @@ echo "环境部署安装初始化"
 IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "k8s"|head -n 1`
 grep "$IP" /etc/hosts >>/dev/null 2>&1
 if [ $? -ne 0 ];then
-grep "hostname=" ${scripts_PATH}/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
+grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
 fi
 
 
