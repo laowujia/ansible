@@ -1,0 +1,28 @@
+---
+# tasks file for ha_keepalived
+- name: 安装haproxy keepalived
+  yum: 
+   name: ['haproxy','keepalived','psmisc','mailx']
+   state: latest
+   update_cache: yes
+
+- name: 推送keepalived配置文件
+  template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+
+- name: 推送haproxy配置文件
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+
+- name: 推送检测脚本
+  copy: src=check_haproxy.sh dest=/etc/keepalived/check_haproxy.sh  mode=0755
+
+- name: 推送ipvs模块
+  copy: src=ipvs.modules dest=/etc/sysconfig/modules/ipvs.modules mode=0755
+
+- name: 开启ipvs模块
+  shell: bash /etc/sysconfig/modules/ipvs.modules
+
+- name: 启动 keepalived
+  systemd: name=keepalived enabled=yes state=started
+
+- name: 启动haproxy
+  systemd: name=haproxy enabled=yes state=started

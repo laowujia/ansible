@@ -1,4 +1,7 @@
 #!/bin/bash
+#定义外部输入确认的正则
+export YES_REGULAR="^[yY][eE][sS]|[yY]$"
+
 scripts_PATH="$( cd "$( dirname "$0"  )" && pwd  )"
 echo $scripts_PATH
 
@@ -57,10 +60,13 @@ echo "[k8s_master]
 192.168.228.206 hostname=node04 ansible_ssh_pass=123456 ansible_user=root
 192.168.228.207 hostname=node05 ansible_ssh_pass=123456 ansible_user=root
 "
+read -r -p "确认安装kubeadm及依赖? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "安装kubeadm及依赖"
 
 echo "环境部署安装初始化"
 #grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
-IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "k8s"|head -n 1`
+IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "#" |grep -v ^$ |grep -v "k8s" |head -n 1`
 grep "$IP" /etc/hosts >>/dev/null 2>&1
 if [ $? -ne 0 ];then
 grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
@@ -77,7 +83,8 @@ scp  $scripts_PATH/k8s_init/files/kubernetes.repo /etc/yum.repos.d/kubernetes.re
 #########################################################################################################################
 function docker_Version () {
 if [[ -z "$Docker_version"  ]];then
-sed -i "s/^Docker_version:.*/Docker_version: ${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
+Docker_version=19.03.9
+sed -i "s/^Docker_version:.*/Docker_version: -${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 yum list docker-ce --showduplicates | sort -r |grep ${Docker_version} > /dev/null
 if [ $? -eq 0 ];then
@@ -90,6 +97,7 @@ fi
 
 function kubeadm_Version () {
 if [[ -z "$Kubeadm_version"  ]];then
+Kubeadm_version=1.17.17
 sed -i "s/^Kubeadm_version:.*/Kubeadm_version: ${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 yum list kubeadm --showduplicates | sort -r |grep ${Kubeadm_version} >/dev/null
@@ -107,19 +115,56 @@ docker_Version
 read -r -p "请输入k8s 集群kubeadm 版本号，比如:1.17.17 ,默认为最新版本 : " Kubeadm_version
 kubeadm_Version
 
-read -r -p "请输入k8s 集群kubeadm初始化的第一个master服务器 IP : " Master_IP
-CheckIPAddr $Master_IP
-if [ $? -eq 0 ];then
-cat > ${scripts_PATH}/k8s_master_hosts << EOF
-[k8s_master]
-$Master_IP
-EOF
-else
-echo "输入 $Master_IP IP 不合法"
-fi
+#read -r -p "请输入k8s 集群kubeadm初始化的第一个master服务器 IP : " Master_IP
+#CheckIPAddr $Master_IP
+#if [ $? -eq 0 ];then
+#cat > ${scripts_PATH}/k8s_master_hosts << EOF
+#[k8s_master]
+#$Master_IP
+#EOF
+#else
+#echo "输入 $Master_IP IP 不合法"
+#fi
+
+#read -r -p "确认安装kubeadm及依赖? [Y/n]:" input_confirm
+#if [[ $input_confirm =~ $YES_REGULAR ]]; then
+#echo "安装kubeadm及依赖"
 
 cd $scripts_PATH
 ansible-playbook k8s_init.yaml
+fi
+
+read -r -p "确认安装部署haproxy keepalived(三节点)? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "安装部署haproxy keepalived"
+read -r -p "请输入的keepalived 第一个VIP : " VIP
+CheckIPAddr $VIP
+if [ $? -eq 0 ];then
+sed -i "s/^VIP:.*/VIP: ${VIP}/" ${scripts_PATH}/ha_keepalived/vars/main.yml
+else
+echo "输入 IP 不合法,请确认"
+fi
+read -r -p "请输入的keepalived 第一个master节点IP : " HA_Master_IP
+read -r -p "请输入的keepalived 第一个BACKUP节点IP : " HA_BACKUP_IP
+read -r -p "请输入的keepalived 第二个BACKUP节点IP : " HA_BACKUP_IP1
+CheckIPAddr $HA_Master_IP && CheckIPAddr $HA_BACKUP_IP && CheckIPAddr $HA_BACKUP_IP1
+
+if [ $? -eq 0 ];then
+cat > ${scripts_PATH}/k8s_HA_hosts << EOF
+[ha_keepalived]
+$HA_Master_IP
+$HA_BACKUP_IP
+$HA_BACKUP_IP1
+EOF
+sed -i "s/^Master01:.*/Master01: ${HA_Master_IP}/" ${scripts_PATH}/ha_keepalived/vars/main.yml
+sed -i "s/^Master02:.*/Master02: ${HA_BACKUP_IP}/" ${scripts_PATH}/ha_keepalived/vars/main.yml
+sed -i "s/^Master03:.*/Master03: ${HA_BACKUP_IP1}/" ${scripts_PATH}/ha_keepalived/vars/main.yml
+else
+echo "输入 IP 不合法,请确认"
+fi
+cd $scripts_PATH
+ansible-playbook -i k8s_HA_hosts  ha_keepalived.yaml
+fi
 
 #ansible-playbook k8s_master.yaml
 

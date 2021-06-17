@@ -1,0 +1,4 @@
+- hosts: ha_keepalived
+  remote_user: root
+  roles:
+   - ha_keepalived
