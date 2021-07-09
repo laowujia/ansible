@@ -66,7 +66,8 @@ echo "安装kubeadm及依赖"
 
 echo "环境部署安装初始化"
 #grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
-IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "#" |grep -v ^$ |grep -v "k8s" |head -n 1`
+#IP=`awk '{print $1}' /etc/ansible/hosts |grep -v "#" |grep -v ^$ |grep -v "k8s" |head -n 1`
+IP=`awk '{print $1}' /etc/ansible/hosts | egrep -o "([0-9]{1,3}.){3}[0-9]{1,3}" |head -n 1`
 grep "$IP" /etc/hosts >>/dev/null 2>&1
 if [ $? -ne 0 ];then
 grep "hostname=" /etc/ansible/hosts|awk '{print $1 ,$2}'|awk -F 'hostname=' '{print $1 $2}' >>/etc/hosts
