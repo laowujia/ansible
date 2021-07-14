@@ -1,5 +1,5 @@
 ---
 # vars file for k8s_init
 #
-Docker_version: -19.03.9
-Kubeadm_version: 1.17.17
+Docker_version: 
+Kubeadm_version: 

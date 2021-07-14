@@ -84,8 +84,7 @@ scp  $scripts_PATH/k8s_init/files/kubernetes.repo /etc/yum.repos.d/kubernetes.re
 #########################################################################################################################
 function docker_Version () {
 if [[ -z "$Docker_version"  ]];then
-Docker_version=19.03.9
-sed -i "s/^Docker_version:.*/Docker_version: -${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
+sed -i "s/^Docker_version:.*/Docker_version: ${Docker_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 yum list docker-ce --showduplicates | sort -r |grep ${Docker_version} > /dev/null
 if [ $? -eq 0 ];then
@@ -98,12 +97,11 @@ fi
 
 function kubeadm_Version () {
 if [[ -z "$Kubeadm_version"  ]];then
-Kubeadm_version=1.17.17
 sed -i "s/^Kubeadm_version:.*/Kubeadm_version: ${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 yum list kubeadm --showduplicates | sort -r |grep ${Kubeadm_version} >/dev/null
 if [ $? -eq 0 ];then
-sed -i "s/^Kubeadm_version:.*/Kubeadm_version: ${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
+sed -i "s/^Kubeadm_version:.*/Kubeadm_version: -${Kubeadm_version}/" ${scripts_PATH}/k8s_init/vars/main.yml
 else
 echo "yum源中没有这个版本，请重新输入"
 fi
