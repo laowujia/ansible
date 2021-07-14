@@ -1,6 +1,5 @@
 ---
 # tasks file for init_system
-
 - name: download centos7 CentOS-Base.repo
   get_url: url=http://mirrors.aliyun.com/repo/Centos-7.repo dest=/etc/yum.repos.d/CentOS-Base.repo 
   tags:
