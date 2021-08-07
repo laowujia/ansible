@@ -1,5 +1,6 @@
 - name: sync date
   shell: /usr/sbin/ntpdate  cn.pool.ntp.org
+  ignore_errors: True
 
 - name: 安装依赖
   yum:
