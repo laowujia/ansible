@@ -107,16 +107,19 @@ echo "部署过程中需要输入版本的，回车为安装默认版本"
 function es_Version () {
 if [[ -z "$ES_version" || "$ES_version" =~ "7.6.2" ]];then
 ES_version=7.6.2
-rm -f $scripts_PATH/package/elasticsearch*
+if [ ! -f $scripts_PATH/package/elasticsearch-"$ES_version"-linux-x86_64.tar.gz ];then
 wget -P $scripts_PATH/package  "http://yum.itestcn.com/github/elasticsearch/release/elasticsearch-7.6.2-linux-x86_64.tar.gz"
 wget -P $scripts_PATH/package  "http://yum.itestcn.com/github/elasticsearch/release/elasticsearch-analysis-ik-7.6.2.zip"
+fi
 sed -i "s/^ES_VERSION:.*/ES_VERSION: 7.6.2/" ${scripts_PATH}/alone/alone_es/vars/main.yml
 sed -i "s/^ES_VERSION:.*/ES_VERSION: 7.6.2/" ${scripts_PATH}/cluster/cluster_es/vars/main.yml
 else
 sed -i "s/^ES_VERSION:.*/ES_VERSION: ${ES_version}/" ${scripts_PATH}/alone/alone_es/vars/main.yml
 sed -i "s/^ES_VERSION:.*/ES_VERSION: ${ES_version}/" ${scripts_PATH}/cluster/cluster_es/vars/main.yml
+if [ ! -f $scripts_PATH/package/elasticsearch-"$ES_version"-linux-x86_64.tar.gz ];then
 wget -P $scripts_PATH/package https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-"$ES_version"-linux-x86_64.tar.gz
 wget -P $scripts_PATH/package https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v"$ES_version"/elasticsearch-analysis-ik-"$ES_version".zip
+fi
 fi
 }
 
@@ -195,11 +198,13 @@ fi
 function kibana_Version () {
 if [[ -z "$Kibana_version" || "$Kibana_version" =~ "7.6.2" ]];then
 Kibana_version=7.6.2
-rm -f $scripts_PATH/package/kibana*
+if [ ! -f $scripts_PATH/package/kibana-7.6.2-linux-x86_64.tar.gz ];then
 wget -P $scripts_PATH/package  http://yum.itestcn.com/github/elasticsearch/release/kibana-7.6.2-linux-x86_64.tar.gz
+fi
 sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
 else
-rm -f $scripts_PATH/package/kibana*
+if [ ! -f $scripts_PATH/package/kibana-"$Kibana_version"-linux-x86_64.tar.gz ];then
+fi
 wget -P $scripts_PATH/package https://artifacts.elastic.co/downloads/kibana/kibana-"$Kibana_version"-linux-x86_64.tar.gz
 sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
 fi
@@ -247,14 +252,17 @@ fi
 function zookeeper_Version () {
 if [[ -z "$Zookeeper_version" || "$Zookeeper_version" =~ "3.6.1" ]];then
 Zookeeper_version=3.6.1
-rm -f $scripts_PATH/package/apache-zookeeper*
+if [ ! -f $scripts_PATH/package/apache-zookeeper-3.6.1-bin.tar.gz ];then
 wget -P $scripts_PATH/package  http://yum.itestcn.com/github/zookeeper/release/apache-zookeeper-3.6.1-bin.tar.gz
+fi
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/cluster/cluster_zookeeper/vars/main.yml
 else
+if [ ! -f $scripts_PATH/package/apache-zookeeper-"$Zookeeper_version"-bin.tar.gz ];then
 wget -P $scripts_PATH/package https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-"$Zookeeper_version"/apache-zookeeper-"$Zookeeper_version"-bin.tar.gz
+fi
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^ZOOKEEPER_VERSION:.*/ZOOKEEPER_VERSION: ${Zookeeper_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
@@ -265,14 +273,17 @@ fi
 function kafka_Version () {
 if [[ -z "$Kafka_version" || "$Kafka_version" =~ "2.5.0" ]];then
 Kafka_version=2.5.0
-rm -f $scripts_PATH/package/kafka*
+if [ ! -f $scripts_PATH/package/kafka_2.12-"${Kafka_version}".tgz ];then
 wget -P $scripts_PATH/package  http://yum.itestcn.com/github/kafka/release/kafka_2.12-2.5.0.tgz
+fi
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
 else
+if [ ! -f $scripts_PATH/package/kafka_2.12-"${Kafka_version}".tgz ];then
 wget -P $scripts_PATH/package  https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/"$Kafka_version"/kafka_2.12-"$Kafka_version".tgz
+fi
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/alone/alone_kafka_zookeeper/vars/main.yml
 sed -i "s/^KAFKA_VERSION:.*/KAFKA_VERSION: 2.12-${Kafka_version}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
@@ -341,16 +352,18 @@ fi
 function redis_Version () {
 if [[ -z "$Redis_version" || "$Redis_version" =~ "5.0.8" ]];then
 Redis_version=5.0.8
-rm -f $scripts_PATH/package/redis*
-rm -f $scripts_PATH/package/tcl*
+if [ ! -f $scripts_PATH/package/redis-${Redis_version}.tar.gz ];then
 wget -P $scripts_PATH/package  http://yum.itestcn.com/github/Redis/releases/redis-5.0.8.tar.gz
 wget -P $scripts_PATH/package  http://yum.itestcn.com/github/Redis/releases/tcl-8.5.13-8.el7.x86_64.rpm
+fi
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/alone/alone_redis/vars/main.yml
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/cluster/active_standby_redis/vars/main.yml
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/cluster/active_standby_sentinel_redis/vars/main.yml
 else
+if [ ! -f $scripts_PATH/package/redis-${Redis_version}.tar.gz ];then
 wget -P $scripts_PATH/package http://mirror.centos.org/centos/7/os/x86_64/Packages/tcl-8.5.13-8.el7.x86_64.rpm
 wget -P $scripts_PATH/package http://download.redis.io/releases/redis-${Redis_version}.tar.gz
+fi
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/alone/alone_redis/vars/main.yml
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/cluster/active_standby_redis/vars/main.yml
 sed -i "s/^Redis_version:.*/Redis_version: ${Redis_version}/" ${scripts_PATH}/cluster/active_standby_sentinel_redis/vars/main.yml
@@ -559,8 +572,9 @@ fi
 function canal_Version () {
 if [[ -z "$Canal_version"   ||  "$Canal_version" =~ "1.1.5" ]];then
 Canal_version=1.1.5
-#rm -f $scripts_PATH/package/canal*
-#wget -P $scripts_PATH/package http://yum.itestcn.com/github/canal/canal.deployer-1.1.5-SNAPSHOT.tar.gz
+if [ ! -f $scripts_PATH/package/canal.deployer-1.1.5-SNAPSHOT.tar.gz ];then
+wget -P $scripts_PATH/package http://yum.itestcn.com/github/canal/canal.deployer-1.1.5-SNAPSHOT.tar.gz
+fi
 sed -i "s/^Canal_version:.*/Canal_version: ${Canal_version}/" ${scripts_PATH}/alone/canal/vars/main.yml
 else
 echo "目前只写的有1.1.5版本的canal "
