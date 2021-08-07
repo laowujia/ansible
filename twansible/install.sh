@@ -204,8 +204,8 @@ fi
 sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
 else
 if [ ! -f $scripts_PATH/package/kibana-"$Kibana_version"-linux-x86_64.tar.gz ];then
-fi
 wget -P $scripts_PATH/package https://artifacts.elastic.co/downloads/kibana/kibana-"$Kibana_version"-linux-x86_64.tar.gz
+fi
 sed -i "s/^KIBANA_VERSION:.*/KIBANA_VERSION: ${Kibana_version}/" ${scripts_PATH}/alone/kibana/vars/main.yml
 fi
 }
