@@ -84,13 +84,15 @@
 
 - name: sync date
   shell: /usr/sbin/ntpdate  cn.pool.ntp.org
+  ignore_errors: True
 
 - name: cron date
   cron: minute=0 hour=0 day=* month=* weekday=* name="cron date" backup=yes job='/usr/sbin/ntpdate  cn.pool.ntp.org'
+  ignore_errors: True
 
 - name: create Directory
   file: path=/data/ state=directory
-
+  
 - name: 修改sshd端口
   lineinfile: path=/etc/ssh/sshd_config regexp="^#Port" line="Port {{SSHD_port}}"
 
