@@ -6,11 +6,24 @@
    state: latest
    update_cache: yes
 
-- name: 推送keepalived配置文件
-  template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+- name: 推送master01 keepalived配置文件
+  template: src=master01_keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  when: ansible_default_ipv4.address == (Master01)
+  notify: restart keepalived
+
+- name: 推送master02 keepalived配置文件
+  template: src=master02_keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  when: ansible_default_ipv4.address == (Master02)
+  notify: restart keepalived
+
+- name: 推送master03 keepalived配置文件
+  template: src=master03_keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  when: ansible_default_ipv4.address == (Master03)
+  notify: restart keepalived
 
 - name: 推送haproxy配置文件
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  notify: restart haproxy
 
 - name: 推送检测脚本
   copy: src=check_haproxy.sh dest=/etc/keepalived/check_haproxy.sh  mode=0755
