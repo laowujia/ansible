@@ -321,9 +321,9 @@ $cluster_ZK_KAFKA_IP1  ZK_id=1 kafka_id=1
 $cluster_ZK_KAFKA_IP2  ZK_id=2 kafka_id=2
 $cluster_ZK_KAFKA_IP3  ZK_id=3 kafka_id=3
 EOF
-sed -i "s/^Zookpeer1_IP:.*/Zookpeer1_IP: ${cluster_ZK_KAFKA_IP1}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
-sed -i "s/^Zookpeer2_IP:.*/Zookpeer2_IP: ${cluster_ZK_KAFKA_IP2}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
-sed -i "s/^Zookpeer3_IP:.*/Zookpeer3_IP: ${cluster_ZK_KAFKA_IP3}/" ${scripts_PATH}/cluster/cluster_kafka/vars/main.yml
+sed -i "s/^Zookpeer1_IP:.*/Zookpeer1_IP: ${cluster_ZK_KAFKA_IP1}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
+sed -i "s/^Zookpeer2_IP:.*/Zookpeer2_IP: ${cluster_ZK_KAFKA_IP2}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
+sed -i "s/^Zookpeer3_IP:.*/Zookpeer3_IP: ${cluster_ZK_KAFKA_IP3}/" ${scripts_PATH}/cluster/cluster_kafka_zookeeper/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts cluster_kafka_zookeeper.yaml
 if [ $? -eq 0 ];then 
