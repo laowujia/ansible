@@ -9,6 +9,8 @@ if [ ! -d $scripts_PATH/package ];then
 mkdir $scripts_PATH/package
 fi
 
+YEASY_TIME=`date +%Y`
+
 ##############检查IP 合法性##############
 function CheckIPAddr () {
 echo $1 |grep "^[0-9]\{1,3\}\.\([0-9]\{1,3\}\.\)\{2\}[0-9]\{1,3\}$" >/dev/null;
@@ -527,6 +529,7 @@ $alone_mysql_IP
 EOF
 read -r -p "请输入mysql root 密码: " Mysql_user_root_password
 sed -i "s/^mysql_login_password:.*/mysql_login_password: ${Mysql_user_root_password}/" ${scripts_PATH}/alone/alone_mysql/vars/main.yml
+sed -i "s/^YEASY_TIME:.*/YEASY_TIME: ${YEASY_TIME}/" ${scripts_PATH}/alone/alone_mysql/vars/main.yml
 cd ${scripts_PATH}/alone/
 ansible-playbook -i ${scripts_PATH}/hosts alone_mysql.yaml
 if [ $? -eq 0 ];then
@@ -547,6 +550,7 @@ EOF
 sed -i "s/^master_ip:.*/master_ip: ${AS_MYSQL_IP1}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
 read -r -p "请输入mysql root 密码: " Mysql_user_root_password
 sed -i "s/^mysql_root_password:.*/mysql_root_password: ${Mysql_user_root_password}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
+sed -i "s/^YEASY_TIME:.*/YEASY_TIME: ${YEASY_TIME}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
 cd ${scripts_PATH}/cluster/
 ansible-playbook -i ${scripts_PATH}/hosts active_standby_mysql.yaml
 if [ $? -eq 0 ];then

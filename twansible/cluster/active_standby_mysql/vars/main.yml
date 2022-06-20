@@ -10,4 +10,4 @@ mysql_user: slave                              #创建用户slave
 mysql_user_password: 297315820Ming             #数据库用户slave 密码
 back_directory: /data/db_backup                #备份脚本所在目录
 back_db_directory: /data/db_backup             #数据备份目录
-
+YEASY_TIME: 2022
