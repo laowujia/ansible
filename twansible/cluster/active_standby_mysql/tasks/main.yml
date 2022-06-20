@@ -10,6 +10,9 @@
   tags:
   - mysqlyumRepository
 
+- name: install mysql keys
+  shell: rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+
 - name: installd mysql
   yum:
    name: 

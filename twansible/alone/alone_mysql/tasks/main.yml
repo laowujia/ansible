@@ -6,6 +6,9 @@
 - name: install mysql yum Repository
   yum: name=/opt/mysql57-community-release-el7-10.noarch.rpm state=installed
 
+- name: install mysql keys
+  shell: rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+
 - name: installd mysql
   yum:
    name: ['mysql-community-server','mysql-community-devel','python-pip','python-devel'] 
