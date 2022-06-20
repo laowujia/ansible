@@ -13,6 +13,8 @@ pid-file=/var/run/mysqld/mysqld.pid
 port=3306
 #设置最大连接数
 max_connections=5000
+max_connect_errors=1000
+group_concat_max_len=102400
 #不区分大小写
 lower_case_table_names=1
 #设置服务编码
