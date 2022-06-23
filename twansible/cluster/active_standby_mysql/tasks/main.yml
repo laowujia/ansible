@@ -20,11 +20,12 @@
     - mysql-community-devel
     - python-pip
     - python-devel
+    - python3
    state: latest 
    update_cache: yes
 
-- name: update pip
-  command: pip install --upgrade pip
+#- name: update pip
+#  command: pip install --upgrade pip
 
 - name: installed mysql-python
   pip: name=mysql-python state=latest

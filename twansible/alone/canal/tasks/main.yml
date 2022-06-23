@@ -1,7 +1,7 @@
 ---
 # tasks file for alone_canal
-- name: install jdk
-  yum: name="java-{{Jdk_version}}-openjdk" state=latest update_cache=yes
+#- name: install jdk
+#  yum: name="java-{{Jdk_version}}-openjdk" state=latest update_cache=yes
 
 - name: installd mysql
   yum:

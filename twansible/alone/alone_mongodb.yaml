@@ -1,0 +1,4 @@
+- hosts: alone_mongodb
+  remote_user: root
+  roles:
+   - alone_mongodb

@@ -72,8 +72,8 @@
 - name: unarchive ik 
   unarchive: src="elasticsearch-analysis-ik-{{ES_VERSION}}.zip" dest="/data/elasticsearch-{{ES_VERSION}}/plugins/ik"
 
-- name: install jdk
-  yum: name="java-{{JDK_version}}-openjdk-devel" state=latest
+#- name: install jdk
+#  yum: name="java-{{JDK_version}}-openjdk-devel" state=latest
 
 - name: 修改es 属主属组
   file: path="/data/elasticsearch-{{ES_VERSION}}" group=elasticsearch owner=elasticsearch recurse=yes

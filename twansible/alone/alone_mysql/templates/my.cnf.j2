@@ -1,13 +1,9 @@
 [mysqld]
 explicit_defaults_for_timestamp=true
-#datadir=/var/lib/mysql
-#datadir=/data/mysql/db
 datadir={{Mysql_datadir}}
 socket=/var/lib/mysql/mysql.sock
-#socket=/var/run/mysqld/mysql.sock
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
-#log-error=/var/log/mysqld.log
 log-error=/data/mysql/log/error.log
 pid-file=/var/run/mysqld/mysqld.pid
 port=3306
@@ -32,5 +28,4 @@ enforce-gtid-consistency=ON
 validate_password_policy=LOW
 group_concat_max_len=102400
 [client]
-#socket=/var/run/mysqld/mysql.sock
 socket=/var/lib/mysql/mysql.sock

@@ -1,5 +1,5 @@
-- name: install JDK
-  yum: name="java-{{JDK_VERSION}}-openjdk-devel" state=latest
+#- name: install JDK
+#  yum: name="java-{{JDK_VERSION}}-openjdk-devel" state=latest
 
 - name: off swap
   command: swapoff -a 

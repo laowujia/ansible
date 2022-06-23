@@ -1,0 +1,21 @@
+---
+# tasks file for jdk
+#
+#
+
+- name: install jdk
+  yum: name="java-{{JDK_version}}-openjdk-devel" state=latest
+  when: INSTALL == "yum"
+
+
+- name: create package Directory
+  file: path=/data/ state=directory
+  when: INSTALL == "noyum"
+
+- name: install jdk-8u202
+  unarchive: src=jdk-8u202-linux-x64.tar.gz dest=/data/ 
+  when: INSTALL == "noyum"
+
+- name: 配置全局环境变量2
+  shell: sed -i '$aexport JAVA_HOME="/data/jdk1.8.0_202"\nexport JRE_HOME=${JAVA_HOME}/jre\nexport CLASSPATH=".:${JAVA_HOME}/lib:${JRE_HOME}/lib"\nexport PATH="$PATH:$JAVA_HOME/bin"' /etc/profile  && source /etc/profile
+  when: INSTALL == "noyum"

@@ -1,0 +1,31 @@
+---
+# tasks file for alone_mongodb
+- name: 安装yum源
+  copy: src=mongodb-org-4.2.repo dest=/etc/yum.repos.d/ force=yes
+
+- name: 安装 mongodb
+  yum: name=mongodb-org state=stable update_cache=yes
+
+- name:  设置yum禁止更新mongodb
+  lineinfile:
+   dest: "/etc/yum.conf"
+   regexp: "^exclude"
+   line: "exclude=mongodb-org,mongodb-org-server,mongodb-org-shell,mongodb-org-mongos,mongodb-org-tools"
+
+- name: create mongodb datadir
+  file: path="/data/mongo/db" state=directory  group=mongod owner=mongod recurse=yes
+
+- name: create mongodb logsdir
+  file: path="/data/mongo/logs" state=directory group=mongod owner=mongod recurse=yes
+
+- name: 修改mongodb file_contexts
+  copy: src=file_contexts dest=/etc/selinux/targeted/contexts/files/file_contexts force=yes
+
+- name: 恢复文件的安全上下文
+  command: restorecon -FRv /data/mongo
+
+- name: mongod 配置文件
+  copy: src=mongod.conf dest=/etc/ force=yes
+
+- name: start mongodb
+  systemd: name=mongodb enabled=yes state=started

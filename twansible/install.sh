@@ -104,6 +104,58 @@ done
 
 echo "部署过程中需要输入版本的，回车为安装默认版本"
 
+
+###################安装jdk #####################
+function jdk_Mode () {
+if [[ -z "$JDK_mode" || "$JDK_mode" == "1" ]];then
+sed -i "s/^INSTALL:.*/INSTALL: yum/" ${scripts_PATH}/alone/jdk/vars/main.yml
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts jdk.yaml
+if [ $? -eq 0 ];then
+echo  "jdk 最新版安装完成"
+else
+echo "jdk安装失败，请重新安装"
+exit 1
+fi
+else
+if [ ! -f $scripts_PATH/package/jdk-8u202-linux-x64.tar.gz ];then
+wget -P $scripts_PATH/package "http://yum.itestcn.com/github/Java/jdk-8u202-linux-x64.tar.gz"
+fi
+scp $scripts_PATH/package/jdk-8u202* $scripts_PATH/alone/jdk/files
+sed -i "s/^INSTALL:.*/INSTALL: noyum/" ${scripts_PATH}/alone/jdk/vars/main.yml
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts jdk.yaml
+if [ $? -eq 0 ];then
+echo  "jdk-8u202安装完成"
+else
+echo "jdk-8u202安装失败，请重新安装"
+exit 1
+fi
+fi
+}
+
+read -r -p "确认是否部署jdk,如果需要部署中间件则需要先执行这一步 ? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 jdk"
+echo "请确认部署jdk的服务器IP,可以输入多个IP ,已空格隔开:"
+read -a IP
+IP_NUM=${#IP[@]}
+
+echo $IP_NUM
+echo [jdk] > ${scripts_PATH}/hosts
+for ((k = 0; k < IP_NUM; k++)); do
+CheckIPAddr ${IP[k]}
+if [ $? -eq 0 ];then
+echo ${IP[k]} >>${scripts_PATH}/hosts
+else
+echo "输入  IP 不合法"
+fi
+done
+
+read -r -p "请确认部署jdk版本，1为yum安装最新稳定版，2为安装jdk-8u202(部署大数据时需要这个版本): " JDK_mode
+jdk_Mode
+fi
+
 #################################################elasticsearch############################################
 
 function es_Version () {
@@ -544,8 +596,8 @@ read -r -p "请输入主从版mysql主服务器IP,例如: 192.168.228.204 : " AS
 read -r -p "请输入主从版mysql从服务器IP,例如: 192.168.228.205 : " AS_MYSQL_IP2
 cat > ${scripts_PATH}/hosts << EOF
 [active_standby_mysql]
-$AS_MYSQL_IP1 mysql_role="master"
-$AS_MYSQL_IP2 mysql_role="slave"
+$AS_MYSQL_IP1 mysql_role="master" server_id=1
+$AS_MYSQL_IP2 mysql_role="slave"  server_id=2
 EOF
 sed -i "s/^master_ip:.*/master_ip: ${AS_MYSQL_IP1}/" ${scripts_PATH}/cluster/active_standby_mysql/vars/main.yml
 read -r -p "请输入mysql root 密码: " Mysql_user_root_password
@@ -700,4 +752,10 @@ canal_mode
 fi
 
 
-#############################################promethues######################
+#############################################Mongodb######################
+
+read -r -p "确认是否部署Mongodb? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 Mongodb"
+
+

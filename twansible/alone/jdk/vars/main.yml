@@ -1,0 +1,4 @@
+---
+# vars file for jdk
+INSTALL: noyum
+JDK_version: 1.8.0
