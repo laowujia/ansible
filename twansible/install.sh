@@ -756,6 +756,92 @@ fi
 
 read -r -p "确认是否部署Mongodb? [Y/n]:" input_confirm
 if [[ $input_confirm =~ $YES_REGULAR ]]; then
-echo "部署 Mongodb"
+echo "部署 Mongodb4.2"
 
+read -r -p "请输入部署Mongodb4.2服务器IP ，例: 192.168.228.208 : " Mongodb_IP
+CheckIPAddr $Mongodb_IP
+if [  $? -eq 0 ];then
+cat > ${scripts_PATH}/hosts << EOF
+[alone_mongodb]
+$Mongodb_IP
+EOF
+else
+echo "$Mongodb_IP IP 不合法"
+fi
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts alone_mongodb.yaml
+if [ $? -eq 0 ];then
+echo  "Mongodb部署完成"
+else
+echo "Mongodb部署失败，请重新部署"
+exit 1
+fi
+fi
+
+#############################################mq5######################
+read -r -p "确认是否部署MQ5? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 activemq-5.16.5"
+read -r -p "请输入部署activemq-5.16.5服务器IP ，例: 192.168.228.208 : " MQ_IP
+CheckIPAddr $MQ_IP
+if [  $? -eq 0 ];then
+cat > ${scripts_PATH}/hosts << EOF
+[alone_mq5]
+$MQ_IP
+EOF
+else
+echo "$MQ_IP IP 不合法"
+fi
+
+if [ ! -f $scripts_PATH/package/apache-activemq-5.16.5-bin.tar.gz ];then
+wget -P $scripts_PATH/package  "http://download.minghero.com/mq/apache-activemq-5.16.5-bin.tar.gz"
+scp $scripts_PATH/package/apache-activemq* $scripts_PATH/alone/alone_mq5/files
+fi
+
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts alone_mq5.yaml
+if [ $? -eq 0 ];then
+echo  "activemq-5.16.5部署完成"
+else
+echo "activemq-5.16.5部署失败，请重新部署"
+exit 1
+fi
+fi
+
+
+#############################################mq5######################
+read -r -p "确认是否部署fastdfs+nginx? [Y/n]:" input_confirm
+if [[ $input_confirm =~ $YES_REGULAR ]]; then
+echo "部署 fastdfs+nginx"
+read -r -p "请输入部署fastdfs+nginx服务器IP ，例: 192.168.228.208 : " FN_IP
+CheckIPAddr $FN_IP
+if [  $? -eq 0 ];then
+cat > ${scripts_PATH}/hosts << EOF
+[fastdfs_nginx]
+$FN_IP
+EOF
+else
+echo "$FN_IP IP 不合法"
+fi
+
+if [ ! -f $scripts_PATH/package/nginx-1.22.0.tar.gz ];then
+wget -P $scripts_PATH/package  "http://nginx.org/download/nginx-1.22.0.tar.gz"
+scp $scripts_PATH/package/nginx-* $scripts_PATH/alone/fastdfs_nginx/files
+fi
+
+if [ ! -f $scripts_PATH/package/fastdfs_1.22.tar.gz ];then
+wget -P $scripts_PATH/package  "http://download.minghero.com/fastdfs/fastdfs_1.22.tar.gz"
+scp $scripts_PATH/package/fastdfs_* $scripts_PATH/alone/fastdfs_nginx/files
+fi
+
+
+cd ${scripts_PATH}/alone/
+ansible-playbook -i ${scripts_PATH}/hosts fastdfs_nginx.yaml
+if [ $? -eq 0 ];then
+echo  "fastdfs_nginx部署完成"
+else
+echo "fastdfs_nginx部署失败，请重新部署"
+exit 1
+fi
+fi
 

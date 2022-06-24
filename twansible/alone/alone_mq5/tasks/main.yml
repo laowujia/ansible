@@ -1,0 +1,14 @@
+---
+# tasks file for alone_mq5
+- name: 推送mq5 二进制文件
+  unarchive: src="apache-activemq-5.16.5-bin.tar.gz" dest=/data/
+
+- name: 重命名  activemq
+  shell: |
+      cd /data/
+      if [ ! -d activemq5 ];then
+          mv apache-activemq-5.16.5 activemq5
+      fi
+
+- name: 启动mq5
+  shell: source /etc/profile && /data/activemq5/bin/activemq start

@@ -1,0 +1,4 @@
+- hosts: fastdfs_nginx
+  remote_user: root
+  roles:
+   - fastdfs_nginx

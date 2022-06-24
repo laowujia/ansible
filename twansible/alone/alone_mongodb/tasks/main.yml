@@ -4,7 +4,7 @@
   copy: src=mongodb-org-4.2.repo dest=/etc/yum.repos.d/ force=yes
 
 - name: 安装 mongodb
-  yum: name=mongodb-org state=stable update_cache=yes
+  yum: name=mongodb-org state=latest update_cache=yes
 
 - name:  设置yum禁止更新mongodb
   lineinfile:
@@ -16,7 +16,7 @@
   file: path="/data/mongo/db" state=directory  group=mongod owner=mongod recurse=yes
 
 - name: create mongodb logsdir
-  file: path="/data/mongo/logs" state=directory group=mongod owner=mongod recurse=yes
+  file: path="/data/mongo/log" state=directory group=mongod owner=mongod recurse=yes
 
 - name: 修改mongodb file_contexts
   copy: src=file_contexts dest=/etc/selinux/targeted/contexts/files/file_contexts force=yes
@@ -28,4 +28,4 @@
   copy: src=mongod.conf dest=/etc/ force=yes
 
 - name: start mongodb
-  systemd: name=mongodb enabled=yes state=started
+  systemd: name=mongod enabled=yes state=started daemon_reload=yes

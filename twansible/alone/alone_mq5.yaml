@@ -1,0 +1,4 @@
+- hosts: alone_mq5
+  remote_user: root
+  roles:
+   - alone_mq5
