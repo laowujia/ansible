@@ -1,6 +1,6 @@
 ---
 # vars file for mysql
-mysql_login_password: admin
+mysql_login_password: 9S6rwQW!Re@#p5w6
 mysql_login_user: root
 mysql_db: wuming
 mysql_user: canal
